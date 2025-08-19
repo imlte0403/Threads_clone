@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../features/home/home.dart';
+import '../constants/sizes.dart';
+import '../constants/gaps.dart';
 
 class AppNavBar extends StatefulWidget {
   final Function(int)? onIndexChanged;
@@ -26,20 +28,24 @@ class _AppNavBarState extends State<AppNavBar> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.construction_outlined, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16),
+          Icon(
+            Icons.construction_outlined,
+            size: Sizes.size64,
+            color: Colors.grey[400],
+          ),
+          Gaps.v16,
           Text(
             '$feature 기능',
             style: TextStyle(
-              fontSize: 24,
+              fontSize: Sizes.size24,
               fontWeight: FontWeight.w600,
               color: Colors.grey[700],
             ),
           ),
-          const SizedBox(height: 8),
+          Gaps.v8,
           Text(
             '추후 개발 예정',
-            style: TextStyle(fontSize: 16, color: Colors.grey[500]),
+            style: TextStyle(fontSize: Sizes.size16, color: Colors.grey[500]),
           ),
         ],
       ),
@@ -69,31 +75,31 @@ class _AppNavBarState extends State<AppNavBar> {
             widget.onIndexChanged?.call(i);
           },
           labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-          height: 54,
+          height: Sizes.size56,
           destinations: const [
             NavigationDestination(
-              icon: Icon(Icons.home_outlined, size: 36),
-              selectedIcon: Icon(Icons.home_rounded, size: 36),
+              icon: Icon(Icons.home_outlined, size: Sizes.size36),
+              selectedIcon: Icon(Icons.home_rounded, size: Sizes.size36),
               label: 'Home',
             ),
             NavigationDestination(
-              icon: Icon(Icons.search, size: 36),
-              selectedIcon: Icon(Icons.search_rounded, size: 36),
+              icon: Icon(Icons.search, size: Sizes.size36),
+              selectedIcon: Icon(Icons.search_rounded, size: Sizes.size36),
               label: 'Search',
             ),
             NavigationDestination(
-              icon: Icon(Icons.edit_outlined, size: 36),
-              selectedIcon: Icon(Icons.edit_rounded, size: 36),
+              icon: Icon(Icons.edit_outlined, size: Sizes.size36),
+              selectedIcon: Icon(Icons.edit_rounded, size: Sizes.size36),
               label: 'Post',
             ),
             NavigationDestination(
-              icon: Icon(Icons.favorite_border_outlined, size: 36),
-              selectedIcon: Icon(Icons.favorite_rounded, size: 36),
+              icon: Icon(Icons.favorite_border_outlined, size: Sizes.size36),
+              selectedIcon: Icon(Icons.favorite_rounded, size: Sizes.size36),
               label: 'Likes',
             ),
             NavigationDestination(
-              icon: Icon(Icons.person_outline, size: 36),
-              selectedIcon: Icon(Icons.person_rounded, size: 36),
+              icon: Icon(Icons.person_outline, size: Sizes.size36),
+              selectedIcon: Icon(Icons.person_rounded, size: Sizes.size36),
               label: 'Profile',
             ),
           ],

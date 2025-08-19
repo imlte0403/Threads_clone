@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../constants/sizes.dart';
 
 class CustomAppBar extends StatelessWidget {
   final String logoPath;
@@ -13,7 +14,7 @@ class CustomAppBar extends StatelessWidget {
       backgroundColor: Colors.white,
       elevation: 0,
       centerTitle: true,
-      title: Image.asset(logoPath, height: 32),
+      title: Image.asset(logoPath, height: Sizes.size32),
     );
   }
 }
