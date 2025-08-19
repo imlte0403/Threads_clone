@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import 'widgets/navigation_bar.dart';
+import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'dev/dev_seed.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // 더미 포스트 자동 생성 (개발용)
+  await seedPosts(count: 15, repeat: 1);
+
   runApp(const MyApp());
 }
 

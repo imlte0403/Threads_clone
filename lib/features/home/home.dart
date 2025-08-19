@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../models/post_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../widgets/appbar.dart';
 import '../../widgets/post_components.dart';
-import '../../constants/gaps.dart';
-import '../../constants/sizes.dart';
+import '../../models/post_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,142 +13,239 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ScrollController _scrollController = ScrollController();
-  bool _isButtonVisible = false;
+  final _scroll = ScrollController();
+  bool _showTop = false;
+
+  static const double _showThreshold = 200;
+  static const double _hideThreshold = 120;
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(() {
-      setState(() {
-        _isButtonVisible = _scrollController.offset > 200;
-      });
+
+    _scroll.addListener(() {
+      final y = _scroll.offset;
+
+      if (!_showTop && y > _showThreshold) {
+        setState(() => _showTop = true);
+      } else if (_showTop && y < _hideThreshold) {
+        setState(() => _showTop = false);
+      }
     });
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _scroll.dispose();
     super.dispose();
   }
 
   void _scrollToTop() {
-    _scrollController.animateTo(
+    _scroll.animateTo(
       0,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOutCubic,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final posts = [
-      {
-        'username': 'timferriss',
-        'verified': true,
-        'timeAgo': '7h',
-        'text': 'Photoshoot with Molly pup. :)',
-        'imageUrls': [
-          'https://picsum.photos/id/237/1200/900',
-          'https://picsum.photos/id/238/1200/900',
-          'https://picsum.photos/id/239/1200/900',
-        ],
-        'replies': 53,
-        'likes': 437,
-        'likedByAvatars': [
-          'https://i.pravatar.cc/100?img=3',
-          'https://i.pravatar.cc/100?img=5',
-        ],
-      },
-      {
-        'username': 'chefmode',
-        'verified': false,
-        'timeAgo': '3h',
-        'text': 'Soaked chickpeas ready for hummus ✨',
-        'imageUrls': ['https://picsum.photos/id/1080/1200/900'],
-        'replies': 23,
-        'likes': 325,
-        'likedByAvatars': [
-          'https://i.pravatar.cc/100?img=8',
-          'https://i.pravatar.cc/100?img=15',
-          'https://i.pravatar.cc/100?img=20',
-        ],
-      },
-      {
-        'username': 'devmode',
-        'verified': true,
-        'timeAgo': '1h',
-        'text':
-            'Finally got my Flutter app working perfectly! The satisfaction is real 🚀',
-        'imageUrls': [],
-        'replies': 89,
-        'likes': 1240,
-        'likedByAvatars': [
-          'https://i.pravatar.cc/100?img=12',
-          'https://i.pravatar.cc/100?img=25',
-        ],
-      },
-      {
-        'username': 'designlover',
-        'verified': false,
-        'timeAgo': '45m',
-        'text':
-            'New UI design patterns are emerging. What do you think about glassmorphism?',
-        'imageUrls': ['https://picsum.photos/id/180/1200/900'],
-        'replies': 156,
-        'likes': 892,
-        'likedByAvatars': ['https://i.pravatar.cc/100?img=30'],
-      },
-    ].map((data) => PostModel.fromJson(data)).toList();
-
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Stack(
         children: [
           CustomScrollView(
-            controller: _scrollController,
+            controller: _scroll,
+            physics: const BouncingScrollPhysics(),
             slivers: [
+              // 커스텀 앱 바
               const CustomAppBar(logoPath: 'assets/Threads-Logo.png'),
-              SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  final postIndex = index ~/ 2;
-                  if (index.isOdd) {
-                    return Container(
-                      height: Sizes.size1,
-                      color: Colors.grey.shade200,
-                      margin: EdgeInsets.symmetric(horizontal: Sizes.size16),
+              // firebase 데이터 연동
+              StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: FirebaseFirestore.instance
+                    .collection('posts')
+                    .orderBy('createdAt', descending: true)
+                    .snapshots(),
+                builder: (context, snap) {
+                  if (snap.connectionState == ConnectionState.waiting) {
+                    return const SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.all(32),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
                     );
                   }
 
-                  final post = posts[postIndex % posts.length];
+                  if (snap.hasError) {
+                    return SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                size: 48,
+                                color: Colors.grey[400],
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                '불러오기 오류: ${snap.error}',
+                                style: TextStyle(color: Colors.grey[600]),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }
 
-                  return PostComponent(post: post);
-                }, childCount: 15),
+                  final docs = snap.data?.docs ?? [];
+                  if (docs.isEmpty) {
+                    return SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(48),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.article_outlined,
+                                size: 64,
+                                color: Colors.grey[400],
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                '아직 게시글이 없어요',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                '첫 번째 포스트를 작성해보세요!',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final m = docs[index].data();
+                      final createdAt = (m['createdAt'] as Timestamp?)
+                          ?.toDate();
+
+                      return PostComponent(
+                        username: (m['username'] ?? 'user') as String,
+                        timeAgo: formatTimeAgo(createdAt),
+                        text: (m['text'] ?? (m['content'] ?? '')) as String,
+                        replies: (m['replies'] ?? (m['comments'] ?? 0)) as int,
+                        likes: (m['likes'] ?? 0) as int,
+                        isVerified: (m['isVerified'] ?? false) as bool,
+                        imageUrls:
+                            (m['imageUrls'] as List?)
+                                ?.map((e) => e.toString())
+                                .toList() ??
+                            const <String>[],
+                        likedByAvatars:
+                            (m['likedByAvatars'] as List?)
+                                ?.map((e) => e.toString())
+                                .toList() ??
+                            const <String>[],
+                        avatarUrl: (m['avatarUrl'] ?? '') as String,
+                      );
+                    }, childCount: docs.length),
+                  );
+                },
               ),
-              SliverToBoxAdapter(child: Gaps.v32),
+
+              const SliverToBoxAdapter(child: SizedBox(height: 100)),
             ],
           ),
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            top: _isButtonVisible ? 15 : -60,
+
+          // TOP 버튼 
+          Positioned(
             left: 0,
             right: 0,
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: SizedBox(
-                height: 45,
-                width: 160,
-                child: ElevatedButton(
-                  onPressed: _isButtonVisible ? _scrollToTop : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: const Text('Top'),
+            top: 0,
+            child: SafeArea(
+              bottom: false,
+              child: Center(
+                child: TweenAnimationBuilder<double>(
+                  duration: const Duration(milliseconds: 300),
+                  tween: Tween(begin: 0.0, end: _showTop ? 1.0 : 0.0),
+                  builder: (context, value, child) {
+                    return Transform.translate(
+                      offset: Offset(0, -50 * (1 - value)), 
+                      child: Opacity(
+                        opacity: value,
+                        child:
+                            value >
+                                0 
+                            ? Container(
+                                margin: const EdgeInsets.only(top: 12),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Material(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(25),
+                                  child: InkWell(
+                                    onTap: _scrollToTop,
+                                    borderRadius: BorderRadius.circular(25),
+                                    child: Container(
+                                      height: 45,
+                                      width: 140,
+                                      alignment: Alignment.center,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.keyboard_arrow_up_rounded,
+                                            color: Colors.grey[700],
+                                            size: 20,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            'TOP',
+                                            style: TextStyle(
+                                              color: Colors.grey[700],
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
