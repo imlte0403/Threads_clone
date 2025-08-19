@@ -1,29 +1,23 @@
 import 'package:flutter/material.dart';
+import '../models/post_model.dart';
 import '../constants/text_style.dart';
 import '../constants/sizes.dart';
 import '../constants/gaps.dart';
 
-class PostComponent extends StatelessWidget {
-  const PostComponent({
-    super.key,
-    required this.username,
-    this.isVerified = false,
-    required this.timeAgo,
-    required this.text,
-    this.imageUrls = const [],
-    required this.replies,
-    required this.likes,
-    this.likedByAvatars = const [],
-  });
+class PostComponent extends StatefulWidget {
+  const PostComponent({super.key, required this.post});
 
-  final String username;
-  final bool isVerified;
-  final String timeAgo;
-  final String text;
-  final List<String> imageUrls;
-  final int replies;
-  final int likes;
-  final List<String> likedByAvatars;
+  final PostModel post;
+
+  @override
+  State<PostComponent> createState() => _PostComponentState();
+}
+
+class _PostComponentState extends State<PostComponent> {
+  bool isLiked = false;
+  bool isCommented = false;
+  bool isReposted = false;
+  bool isShared = false;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +41,7 @@ class PostComponent extends StatelessWidget {
                   ),
                 ),
                 Gaps.v8,
-                _MiniAvatarStack(urls: likedByAvatars),
+                _MiniAvatarStack(urls: widget.post.likedByAvatars),
               ],
             ),
             Gaps.h12,
@@ -57,8 +51,8 @@ class PostComponent extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(username, style: AppTextStyles.username),
-                      if (isVerified) ...[
+                      Text(widget.post.username, style: AppTextStyles.username),
+                      if (widget.post.isVerified) ...[
                         Gaps.h4,
                         Icon(
                           Icons.verified,
@@ -67,7 +61,7 @@ class PostComponent extends StatelessWidget {
                         ),
                       ],
                       const Spacer(),
-                      Text(timeAgo, style: AppTextStyles.system),
+                      Text(widget.post.timeAgo, style: AppTextStyles.system),
                       Gaps.h12,
                       Icon(
                         Icons.more_horiz,
@@ -77,30 +71,46 @@ class PostComponent extends StatelessWidget {
                     ],
                   ),
                   Gaps.v4,
-                  Text(text, style: AppTextStyles.postText),
-                  // 이미지가 있을 때
-                  if (imageUrls.isNotEmpty) ...[
+                  Text(widget.post.text, style: AppTextStyles.postText),
+                  if (widget.post.imageUrls.isNotEmpty) ...[
                     Gaps.v12,
-                    _MediaImage(url: imageUrls.first),
+                    _MediaGallery(urls: widget.post.imageUrls),
                   ],
                   Gaps.v16,
                   Row(
                     children: [
-                      _ActionIcon(icon: Icons.favorite_border, onTap: () {}),
+                      _ActionIcon(
+                        icon: isLiked ? Icons.favorite : Icons.favorite_border,
+                        onTap: () => setState(() => isLiked = !isLiked),
+                        isSelected: isLiked,
+                        selectedColor: Colors.pink,
+                      ),
                       Gaps.h20,
                       _ActionIcon(
                         icon: Icons.mode_comment_outlined,
-                        onTap: () {},
+                        onTap: () => setState(() => isCommented = !isCommented),
+                        isSelected: isCommented,
+                        selectedColor: Colors.amber,
                       ),
                       Gaps.h20,
-                      _ActionIcon(icon: Icons.repeat, onTap: () {}),
+                      _ActionIcon(
+                        icon: Icons.repeat,
+                        onTap: () => setState(() => isReposted = !isReposted),
+                        isSelected: isReposted,
+                        selectedColor: Colors.green,
+                      ),
                       Gaps.h20,
-                      _ActionIcon(icon: Icons.send_outlined, onTap: () {}),
+                      _ActionIcon(
+                        icon: Icons.send_outlined,
+                        onTap: () => setState(() => isShared = !isShared),
+                        isSelected: isShared,
+                        selectedColor: Colors.blue,
+                      ),
                     ],
                   ),
                   Gaps.v12,
                   Text(
-                    '$replies replies · $likes likes',
+                    '${widget.post.replies} replies · ${widget.post.likes} likes',
                     style: AppTextStyles.system,
                   ),
                 ],
@@ -133,10 +143,17 @@ class _Avatar extends StatelessWidget {
 }
 
 class _ActionIcon extends StatelessWidget {
-  const _ActionIcon({required this.icon, required this.onTap});
+  const _ActionIcon({
+    required this.icon,
+    required this.onTap,
+    this.isSelected = false,
+    this.selectedColor = Colors.blue,
+  });
 
   final IconData icon;
   final VoidCallback onTap;
+  final bool isSelected;
+  final Color selectedColor;
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +161,11 @@ class _ActionIcon extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.all(Sizes.size8),
-        child: Icon(icon, size: Sizes.size20, color: Colors.grey.shade700),
+        child: Icon(
+          icon,
+          size: Sizes.size20,
+          color: isSelected ? selectedColor : Colors.grey.shade700,
+        ),
       ),
     );
   }
@@ -156,8 +177,9 @@ class _MiniAvatarStack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (urls.isEmpty)
+    if (urls.isEmpty) {
       return const SizedBox(width: Sizes.size24, height: Sizes.size24);
+    }
 
     final displayCount = urls.length.clamp(0, 3);
 
@@ -202,45 +224,67 @@ class _MiniAvatarStack extends StatelessWidget {
   }
 }
 
-class _MediaImage extends StatelessWidget {
-  const _MediaImage({required this.url});
-  final String url;
+class _MediaGallery extends StatelessWidget {
+  const _MediaGallery({required this.urls});
+  final List<String> urls;
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(Sizes.size12),
-      child: Container(
-        width: double.infinity,
-        constraints: BoxConstraints(maxHeight: Sizes.size200),
-        child: Image.network(
-          url,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => Container(
-            height: Sizes.size150,
-            color: Colors.grey.shade200,
-            child: Center(
-              child: Icon(
-                Icons.broken_image,
-                size: Sizes.size48,
-                color: Colors.grey.shade400,
-              ),
+    if (urls.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final displayUrls = urls.take(3).toList();
+    final screenWidth = MediaQuery.of(context).size.width;
+    // Paddings (16*2) + Avatar(36) + Gap(12)
+    final galleryWidth =
+        screenWidth - (Sizes.size16 * 2) - Sizes.size36 - Sizes.size12;
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: List.generate(displayUrls.length, (index) {
+          return Container(
+            margin: EdgeInsets.only(
+              right: index < displayUrls.length - 1 ? Sizes.size8 : 0,
             ),
-          ),
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Container(
-              height: Sizes.size150,
-              color: Colors.grey.shade100,
-              child: Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: Sizes.size2,
-                  color: Colors.grey.shade400,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(Sizes.size12),
+              child: SizedBox(
+                width: galleryWidth,
+                height: Sizes.size200,
+                child: Image.network(
+                  displayUrls[index],
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    height: Sizes.size150,
+                    color: Colors.grey.shade200,
+                    child: Center(
+                      child: Icon(
+                        Icons.broken_image,
+                        size: Sizes.size48,
+                        color: Colors.grey.shade400,
+                      ),
+                    ),
+                  ),
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      height: Sizes.size150,
+                      color: Colors.grey.shade100,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: Sizes.size2,
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        }),
       ),
     );
   }
