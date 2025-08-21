@@ -126,6 +126,7 @@ class _PostComponentState extends State<PostComponent> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Gaps.v4,
                     // 유저 네임 / 인증 마크 / 시간 / ... 버튼
                     Row(
                       children: [
