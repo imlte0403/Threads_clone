@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../constants/sizes.dart';
 import '../../constants/gaps.dart';
@@ -60,6 +61,7 @@ class CreatePostScreen extends StatefulWidget {
 class _CreatePostScreenState extends State<CreatePostScreen> {
   final TextEditingController _textController = TextEditingController();
   bool _hasText = false;
+  bool _isPosting = false; // 포스트 중인지 상태 추가
 
   @override
   void initState() {
@@ -77,6 +79,67 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     super.dispose();
   }
 
+  // Firestore에 게시글 저장하는 함수
+  Future<void> _createPost() async {
+    if (!_hasText || _isPosting) return;
+
+    setState(() {
+      _isPosting = true;
+    });
+
+    try {
+      final firestore = FirebaseFirestore.instance;
+
+      // 새 게시글 데이터 준비
+      final postData = {
+        'username': 'jane_mobbin', // 실제로는 현재 사용자 정보를 가져와야 함
+        'avatarUrl': widget.avatarUrl,
+        'isVerified': true, // 실제로는 사용자의 인증 상태를 확인해야 함
+        'text': _textController.text.trim(),
+        'imageUrls': <String>[], // 현재는 이미지 없이, 추후 이미지 업로드 기능 추가 가능
+        'replies': 0,
+        'likes': 0,
+        'likedByAvatars': <String>[],
+        'createdAt': FieldValue.serverTimestamp(),
+      };
+
+      // Firestore에 저장
+      await firestore.collection('posts').add(postData);
+
+      // 성공 시 화면 닫기
+      if (mounted) {
+        Navigator.pop(context);
+
+        // 성공 메시지 표시 (선택사항)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('게시글이 성공적으로 등록되었습니다!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      // 에러 처리
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('게시글 등록에 실패했습니다: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+      print('게시글 저장 오류: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isPosting = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -88,10 +151,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           elevation: 0,
           leadingWidth: 80,
           leading: TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
+            onPressed: _isPosting ? null : () => Navigator.pop(context),
+            child: Text(
               'Cancel',
-              style: TextStyle(color: Colors.black, fontSize: 16),
+              style: TextStyle(
+                color: _isPosting ? Colors.grey : Colors.black,
+                fontSize: 16,
+              ),
             ),
           ),
           title: const Text(
@@ -158,6 +224,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           TextField(
                             controller: _textController,
                             maxLines: null,
+                            enabled: !_isPosting, // 포스팅 중에는 비활성화
                             decoration: const InputDecoration(
                               hintText: 'Start a thread...',
                               hintStyle: TextStyle(
@@ -171,15 +238,19 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           Gaps.h16,
                           // 첨부 아이콘
                           InkWell(
-                            onTap: () {
-                              // 첨부 기능 구현
-                              print('Attachment tapped');
-                            },
+                            onTap: _isPosting
+                                ? null
+                                : () {
+                                    // 첨부 기능 구현
+                                    print('Attachment tapped');
+                                  },
                             child: Transform.rotate(
                               angle: 0.75,
                               child: Icon(
                                 Icons.attach_file,
-                                color: Colors.grey[600],
+                                color: _isPosting
+                                    ? Colors.grey[400]
+                                    : Colors.grey[600],
                                 size: 20,
                               ),
                             ),
@@ -201,22 +272,29 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     'Anyone can reply',
                     style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
-                  TextButton(
-                    onPressed: _hasText
-                        ? () {
-                            // Post 기능 구현
-                            print('Post tapped');
-                          }
-                        : null,
-                    child: Text(
-                      'Post',
-                      style: TextStyle(
-                        color: _hasText ? Colors.blue : Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
+                  // Post 버튼
+                  _isPosting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.blue,
+                            ),
+                          ),
+                        )
+                      : TextButton(
+                          onPressed: _hasText ? _createPost : null,
+                          child: Text(
+                            'Post',
+                            style: TextStyle(
+                              color: _hasText ? Colors.blue : Colors.grey,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
                 ],
               ),
             ),
