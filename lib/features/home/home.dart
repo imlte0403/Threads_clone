@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../widgets/appbar.dart';
 import '../../widgets/post_components.dart';
 import '../../models/post_model.dart';
+import '../../constants/gaps.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -94,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 size: 48,
                                 color: Colors.grey[400],
                               ),
-                              const SizedBox(height: 16),
+                              Gaps.h16,
                               Text(
                                 '불러오기 오류: ${snap.error}',
                                 style: TextStyle(color: Colors.grey[600]),
@@ -120,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 size: 64,
                                 color: Colors.grey[400],
                               ),
-                              const SizedBox(height: 16),
+                              Gaps.h16,
                               Text(
                                 '아직 게시글이 없어요',
                                 style: TextStyle(
@@ -128,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: Colors.grey[600],
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              Gaps.h8,
                               Text(
                                 '첫 번째 포스트를 작성해보세요!',
                                 style: TextStyle(
@@ -177,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
 
-          // TOP 버튼 
+          // TOP 버튼
           Positioned(
             left: 0,
             right: 0,
@@ -190,12 +191,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   tween: Tween(begin: 0.0, end: _showTop ? 1.0 : 0.0),
                   builder: (context, value, child) {
                     return Transform.translate(
-                      offset: Offset(0, -50 * (1 - value)), 
+                      offset: Offset(0, -50 * (1 - value)),
                       child: Opacity(
                         opacity: value,
-                        child:
-                            value >
-                                0 
+                        child: value > 0
                             ? Container(
                                 margin: const EdgeInsets.only(top: 12),
                                 decoration: BoxDecoration(
@@ -227,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             color: Colors.grey[700],
                                             size: 20,
                                           ),
-                                          const SizedBox(width: 4),
+                                          Gaps.v4,
                                           Text(
                                             'TOP',
                                             style: TextStyle(

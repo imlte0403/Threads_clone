@@ -9,7 +9,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // 더미 포스트 자동 생성 (개발용)
-  await seedPosts(count: 15, repeat: 1);
+  await seedPosts(count: 5, repeat: 1);
 
   runApp(const MyApp());
 }

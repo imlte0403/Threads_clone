@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:thread_clone/widgets/post_modalBottomSheet.dart';
 import '../constants/text_style.dart';
 import '../constants/sizes.dart';
 import '../constants/gaps.dart';
@@ -7,14 +8,11 @@ import '../constants/gaps.dart';
 class PostComponent extends StatefulWidget {
   const PostComponent({
     super.key,
-    // 필수 요소
     required this.username,
     required this.timeAgo,
     required this.text,
     required this.replies,
     required this.likes,
-
-    // 이미지/아바타/인증 배지
     this.imageUrls = const <String>[],
     this.likedByAvatars = const <String>[],
     this.isVerified = false,
@@ -26,7 +24,6 @@ class PostComponent extends StatefulWidget {
   final String text;
   final int replies;
   final int likes;
-
   final List<String> imageUrls;
   final List<String> likedByAvatars;
   final bool isVerified;
@@ -99,11 +96,13 @@ class _PostComponentState extends State<PostComponent> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 유저 프로필/세로라인/미니 아바타
+              // 좌측 섹션
               Column(
                 children: [
+                  // 프로필 이미지
                   _AvatarNetwork(size: Sizes.size36, url: widget.avatarUrl),
                   Gaps.v8,
+                  // 세로선
                   Expanded(
                     child: Container(
                       width: Sizes.size2,
@@ -117,19 +116,22 @@ class _PostComponentState extends State<PostComponent> {
                     ),
                   ),
                   Gaps.v8,
+                  // 아바타 이미지
                   _MiniAvatarStack(urls: widget.likedByAvatars),
                 ],
               ),
               Gaps.h12,
-
-              // 본문
               Expanded(
+                // 우측 섹션
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // 유저 네임 / 인증 마크 / 시간 / ... 버튼
                     Row(
                       children: [
+                        //유저 네임
                         Text(widget.username, style: AppTextStyles.username),
+                        // 인증 마크
                         if (widget.isVerified) ...[
                           Gaps.h4,
                           const Icon(
@@ -139,23 +141,32 @@ class _PostComponentState extends State<PostComponent> {
                           ),
                         ],
                         const Spacer(),
+                        // 시간
                         Text(widget.timeAgo, style: AppTextStyles.system),
                         Gaps.h12,
-                        Icon(
-                          Icons.more_horiz,
-                          size: Sizes.size18,
-                          color: Colors.grey.shade600,
+                        // ... 버튼
+                        GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                              backgroundColor: Colors.white,
+                              context: context,
+                              builder: (context) => PostModalBottomSheet(),
+                            );
+                          },
+                          child: Icon(
+                            Icons.more_horiz,
+                            size: Sizes.size18,
+                            color: Colors.grey.shade600,
+                          ),
                         ),
                       ],
                     ),
                     Gaps.v4,
                     Text(widget.text, style: AppTextStyles.postText),
-
                     if (widget.imageUrls.isNotEmpty) ...[
                       Gaps.v12,
                       _MediaGallery(urls: widget.imageUrls),
                     ],
-
                     Gaps.v16,
                     Row(
                       children: [
@@ -227,7 +238,7 @@ class _ActionIcon extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(Sizes.size8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(Sizes.size20),
           color: isSelected
               ? selectedColor.withOpacity(0.1)
               : Colors.transparent,
@@ -269,8 +280,8 @@ class _MiniAvatarStack extends StatelessWidget {
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 1),
+                      blurRadius: Sizes.size4,
+                      offset: const Offset(0, Sizes.size1),
                     ),
                   ],
                 ),
@@ -281,7 +292,9 @@ class _MiniAvatarStack extends StatelessWidget {
                     placeholder: (context, url) => Container(
                       color: Colors.grey.shade200,
                       child: const Center(
-                        child: CircularProgressIndicator(strokeWidth: 1),
+                        child: CircularProgressIndicator(
+                          strokeWidth: Sizes.size1,
+                        ),
                       ),
                     ),
                     errorWidget: (context, url, error) => Container(
@@ -308,7 +321,6 @@ class _MediaGallery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 최대 3장 제한
     final display = urls.take(3).toList();
     if (display.isEmpty) return const SizedBox.shrink();
 
@@ -316,21 +328,17 @@ class _MediaGallery extends StatelessWidget {
     final baseWidth =
         screenW - (Sizes.size16 * 2) - Sizes.size36 - Sizes.size12;
 
-    // 이미지 개수에 따른 레이아웃 조정
     return _buildImageLayout(display, baseWidth);
   }
 
   Widget _buildImageLayout(List<String> images, double maxWidth) {
     if (images.length == 1) {
       return _buildSingleImage(images[0], maxWidth);
-    } else if (images.length == 2) {
-      return _buildTwoImages(images, maxWidth);
     } else {
-      return _buildThreeImages(images, maxWidth);
+      return _buildMultipleImages(images, maxWidth);
     }
   }
 
-  // 단일 이미지 레이아웃
   Widget _buildSingleImage(String imageUrl, double maxWidth) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(Sizes.size12),
@@ -342,30 +350,7 @@ class _MediaGallery extends StatelessWidget {
     );
   }
 
-  // 2장 이미지 레이아웃 (완전히 왼쪽 정렬 + 다음 이미지 미리보기)
-  Widget _buildTwoImages(List<String> images, double maxWidth) {
-    return SizedBox(
-      height: Sizes.size200,
-      width: maxWidth,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: images.length,
-        itemBuilder: (context, index) {
-          return Container(
-            width: maxWidth * 0.95,
-            margin: EdgeInsets.only(right: index < images.length - 1 ? 8 : 0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(Sizes.size12),
-              child: _buildCachedImage(images[index]),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  // 3장 이미지 레이아웃
-  Widget _buildThreeImages(List<String> images, double maxWidth) {
+  Widget _buildMultipleImages(List<String> images, double maxWidth) {
     return SizedBox(
       height: Sizes.size200,
       width: maxWidth,
@@ -375,7 +360,9 @@ class _MediaGallery extends StatelessWidget {
         itemBuilder: (context, index) {
           return Container(
             width: maxWidth * 0.9,
-            margin: EdgeInsets.only(right: index < images.length - 1 ? 8 : 0),
+            margin: EdgeInsets.only(
+              right: index < images.length - 1 ? Sizes.size8 : 0,
+            ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(Sizes.size12),
               child: _buildCachedImage(images[index]),
@@ -405,10 +392,13 @@ class _MediaGallery extends StatelessWidget {
                 size: Sizes.size32,
                 color: Colors.grey.shade400,
               ),
-              const SizedBox(height: 4),
+              Gaps.v4,
               Text(
                 '이미지 로드 실패',
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                style: TextStyle(
+                  fontSize: Sizes.size12,
+                  color: Colors.grey.shade500,
+                ),
               ),
             ],
           ),

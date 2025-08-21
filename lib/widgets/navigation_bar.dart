@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../features/home/home.dart';
+import '../features/create_post/create_post_screen.dart';
 import '../constants/sizes.dart';
 import '../constants/gaps.dart';
 
@@ -18,7 +19,10 @@ class _AppNavBarState extends State<AppNavBar> {
   final List<Widget> _screens = [
     const HomeScreen(),
     _buildComingSoonScreen('검색'),
-    _buildComingSoonScreen('포스트'),
+    CreatePostScreen(
+      avatarUrl:
+          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+    ),
     _buildComingSoonScreen('좋아요'),
     _buildComingSoonScreen('프로필'),
   ];
@@ -71,8 +75,23 @@ class _AppNavBarState extends State<AppNavBar> {
         child: NavigationBar(
           selectedIndex: _index,
           onDestinationSelected: (i) {
-            setState(() => _index = i);
-            widget.onIndexChanged?.call(i);
+            if (i == 2) {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.9,
+                  child: CreatePostScreen(
+                    avatarUrl:
+                        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+                  ),
+                ),
+              );
+            } else {
+              setState(() => _index = i);
+              widget.onIndexChanged?.call(i);
+            }
           },
           labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
           height: Sizes.size56,
