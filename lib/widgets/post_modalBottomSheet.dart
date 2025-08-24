@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../features/report/report_screen.dart';
 
 class PostModalBottomSheet extends StatelessWidget {
   const PostModalBottomSheet({super.key});
@@ -25,7 +26,6 @@ class PostModalBottomSheet extends StatelessWidget {
                   ),
                   onTap: () {
                     Navigator.pop(context);
-                    print('언팔로우 클릭됨');
                   },
                 ),
                 Divider(height: 1, color: Colors.grey[300]),
@@ -36,7 +36,6 @@ class PostModalBottomSheet extends StatelessWidget {
                   ),
                   onTap: () {
                     Navigator.pop(context);
-                    print('음소거 클릭됨');
                   },
                 ),
               ],
@@ -57,7 +56,6 @@ class PostModalBottomSheet extends StatelessWidget {
                   ),
                   onTap: () {
                     Navigator.pop(context);
-                    print('숨기기 클릭됨');
                   },
                 ),
                 Divider(height: 1, color: Colors.grey[300]),
@@ -71,7 +69,15 @@ class PostModalBottomSheet extends StatelessWidget {
                   ),
                   onTap: () {
                     Navigator.pop(context);
-                    print('신고 클릭됨');
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.7,
+                        child: const ReportScreen(),
+                      ),
+                    );
                   },
                 ),
               ],

@@ -61,7 +61,7 @@ class CreatePostScreen extends StatefulWidget {
 class _CreatePostScreenState extends State<CreatePostScreen> {
   final TextEditingController _textController = TextEditingController();
   bool _hasText = false;
-  bool _isPosting = false; // 포스트 중인지 상태 추가
+  bool _isPosting = false;
 
   @override
   void initState() {
@@ -92,11 +92,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
       // 새 게시글 데이터 준비
       final postData = {
-        'username': 'jane_mobbin', // 실제로는 현재 사용자 정보를 가져와야 함
+        'username': 'jane_mobbin', // 임시
         'avatarUrl': widget.avatarUrl,
-        'isVerified': true, // 실제로는 사용자의 인증 상태를 확인해야 함
+        'isVerified': true, // 임시
         'text': _textController.text.trim(),
-        'imageUrls': <String>[], // 현재는 이미지 없이, 추후 이미지 업로드 기능 추가 가능
+        'imageUrls': <String>[], // 임시
         'replies': 0,
         'likes': 0,
         'likedByAvatars': <String>[],
@@ -110,7 +110,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       if (mounted) {
         Navigator.pop(context);
 
-        // 성공 메시지 표시 (선택사항)
+        // 성공 메시지 표시
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('게시글이 성공적으로 등록되었습니다!'),
