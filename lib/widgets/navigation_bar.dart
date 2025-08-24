@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../features/home/home.dart';
 import '../features/create_post/create_post_screen.dart';
 import '../features/search/search_screen.dart';
+import '../features/activity/activity_screen.dart';
 import '../constants/sizes.dart';
 import '../constants/gaps.dart';
 
@@ -24,7 +25,7 @@ class _AppNavBarState extends State<AppNavBar> {
       avatarUrl:
           'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
     ),
-    _buildComingSoonScreen('좋아요'),
+    const ActivityScreen(),
     _buildComingSoonScreen('프로필'),
   ];
 

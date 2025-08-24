@@ -163,7 +163,7 @@ class _PostComponentState extends State<PostComponent> {
                       ],
                     ),
                     Gaps.v4,
-                    Text(widget.text, style: AppTextStyles.postText),
+                    Text(widget.text, style: AppTextStyles.commonText),
                     if (widget.imageUrls.isNotEmpty) ...[
                       Gaps.v12,
                       _MediaGallery(urls: widget.imageUrls),
