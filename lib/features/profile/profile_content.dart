@@ -207,9 +207,10 @@ class ProfileTabBarDelegate extends SliverPersistentHeaderDelegate {
   ProfileTabBarDelegate({required this.tabController, required this.tabs});
 
   @override
-  double get minExtent => 48;
+  double get minExtent => Sizes.size48;
+
   @override
-  double get maxExtent => 48;
+  double get maxExtent => Sizes.size48;
 
   @override
   Widget build(
@@ -220,7 +221,6 @@ class ProfileTabBarDelegate extends SliverPersistentHeaderDelegate {
     return Container(
       color: Colors.white,
       child: AnimatedBuilder(
-        // ✅ index 변경 즉시 반영
         animation: tabController,
         builder: (_, __) {
           return Row(

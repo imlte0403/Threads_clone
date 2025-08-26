@@ -16,12 +16,30 @@ class _ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  static const List<String> _tabs = ['Threads', 'Replies'];
+  List<String> _tabs = ['Threads', 'Replies'];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        setState(() {});
+      }
+    });
+  }
+
+  void _setTabs(List<String> next) {
+    setState(() {
+      final newIndex = _tabController.index.clamp(0, next.length - 1);
+      _tabController.dispose();
+      _tabController = TabController(
+        length: next.length,
+        vsync: this,
+        initialIndex: newIndex,
+      );
+      _tabs = next;
+    });
   }
 
   @override
@@ -31,13 +49,10 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   List<ProfilePostModel> _getCurrentTabData() {
-    switch (_tabController.index) {
-      case 0:
-        return ProfileData.threadsData;
-      case 1:
-        return ProfileData.repliesData;
-      default:
-        return ProfileData.threadsData;
+    if (_tabController.index == 0) {
+      return ProfileData.threadsData;
+    } else {
+      return ProfileData.repliesData;
     }
   }
 
@@ -45,20 +60,17 @@ class _ProfileScreenState extends State<ProfileScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: CustomScrollView(
-        slivers: [
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerScrolled) => [
           const ProfileAppBar(),
-
           SliverToBoxAdapter(
             child: ProfileHeader(profile: ProfileData.janeProfile),
           ),
-
           SliverToBoxAdapter(
             child: Column(
               children: [Gaps.v16, const ProfileActionButtons(), Gaps.v16],
             ),
           ),
-
           SliverPersistentHeader(
             pinned: true,
             delegate: ProfileTabBarDelegate(
@@ -66,29 +78,46 @@ class _ProfileScreenState extends State<ProfileScreen>
               tabs: _tabs,
             ),
           ),
-
-          SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              final posts = _getCurrentTabData();
-              if (index >= posts.length) return null;
-
-              final post = posts[index];
-              return PostComponent(
-                username: post.username,
-                timeAgo: post.timeAgo,
-                text: post.text,
-                replies: post.replies,
-                likes: post.likes,
-                imageUrls: post.imageUrls,
-                likedByAvatars: post.likedByAvatars,
-                isVerified: post.isVerified,
-                avatarUrl: post.avatarUrl,
-              );
-            }, childCount: _getCurrentTabData().length),
-          ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            ListView.builder(
+              itemCount: ProfileData.threadsData.length,
+              itemBuilder: (_, i) {
+                final post = ProfileData.threadsData[i];
+                return PostComponent(
+                  username: post.username,
+                  timeAgo: post.timeAgo,
+                  text: post.text,
+                  replies: post.replies,
+                  likes: post.likes,
+                  imageUrls: post.imageUrls,
+                  likedByAvatars: post.likedByAvatars,
+                  isVerified: post.isVerified,
+                  avatarUrl: post.avatarUrl,
+                );
+              },
+            ),
+            ListView.builder(
+              itemCount: ProfileData.repliesData.length,
+              itemBuilder: (_, i) {
+                final post = ProfileData.repliesData[i];
+                return PostComponent(
+                  username: post.username,
+                  timeAgo: post.timeAgo,
+                  text: post.text,
+                  replies: post.replies,
+                  likes: post.likes,
+                  imageUrls: post.imageUrls,
+                  likedByAvatars: post.likedByAvatars,
+                  isVerified: post.isVerified,
+                  avatarUrl: post.avatarUrl,
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
