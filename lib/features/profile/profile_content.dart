@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'profile_model.dart';
 import '../../constants/sizes.dart';
@@ -199,7 +198,6 @@ class _ActionButton extends StatelessWidget {
   }
 }
 
-// TODO: 탭 전환 연결
 class ProfileTabBarDelegate extends SliverPersistentHeaderDelegate {
   final TabController tabController;
   final List<String> tabs;
@@ -218,47 +216,54 @@ class ProfileTabBarDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    return Container(
+    return Material(
       color: Colors.white,
-      child: AnimatedBuilder(
-        animation: tabController,
-        builder: (_, __) {
-          return Row(
-            children: List.generate(tabs.length, (i) {
-              final isSelected = tabController.index == i;
-              return Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => tabController.animateTo(
-                    i,
-                    duration: const Duration(milliseconds: 120),
-                    curve: Curves.easeOut,
-                  ),
-                  child: Container(
-                    height: 48,
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: isSelected ? Colors.black : Colors.transparent,
-                          width: 1,
+      child: SizedBox(
+        width: double.infinity,
+        height: 48.0,
+        child: AnimatedBuilder(
+          animation: tabController,
+          builder: (_, __) {
+            return Row(
+              children: List.generate(tabs.length, (i) {
+                final isSelected = tabController.index == i;
+                return Expanded(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => tabController.animateTo(
+                      i,
+                      duration: const Duration(milliseconds: 120),
+                      curve: Curves.easeOut,
+                    ),
+                    child: Container(
+                      height: 48,
+                      padding: EdgeInsets.zero,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: isSelected
+                                ? Colors.black
+                                : Colors.transparent,
+                            width: 1,
+                          ),
                         ),
                       ),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      tabs[i],
-                      style: isSelected
-                          ? AppTextStyles.username
-                          : AppTextStyles.commonText.copyWith(
-                              color: Colors.grey.shade600,
-                            ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        tabs[i],
+                        style: isSelected
+                            ? AppTextStyles.username
+                            : AppTextStyles.commonText.copyWith(
+                                color: Colors.grey.shade600,
+                              ),
+                      ),
                     ),
                   ),
-                ),
-              );
-            }),
-          );
-        },
+                );
+              }),
+            );
+          },
+        ),
       ),
     );
   }

@@ -66,11 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           SliverToBoxAdapter(
             child: ProfileHeader(profile: ProfileData.janeProfile),
           ),
-          SliverToBoxAdapter(
-            child: Column(
-              children: [Gaps.v16, const ProfileActionButtons(), Gaps.v16],
-            ),
-          ),
+          SliverToBoxAdapter(child: const ProfileActionButtons()),
           SliverPersistentHeader(
             pinned: true,
             delegate: ProfileTabBarDelegate(
@@ -79,44 +75,49 @@ class _ProfileScreenState extends State<ProfileScreen>
             ),
           ),
         ],
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            ListView.builder(
-              itemCount: ProfileData.threadsData.length,
-              itemBuilder: (_, i) {
-                final post = ProfileData.threadsData[i];
-                return PostComponent(
-                  username: post.username,
-                  timeAgo: post.timeAgo,
-                  text: post.text,
-                  replies: post.replies,
-                  likes: post.likes,
-                  imageUrls: post.imageUrls,
-                  likedByAvatars: post.likedByAvatars,
-                  isVerified: post.isVerified,
-                  avatarUrl: post.avatarUrl,
-                );
-              },
-            ),
-            ListView.builder(
-              itemCount: ProfileData.repliesData.length,
-              itemBuilder: (_, i) {
-                final post = ProfileData.repliesData[i];
-                return PostComponent(
-                  username: post.username,
-                  timeAgo: post.timeAgo,
-                  text: post.text,
-                  replies: post.replies,
-                  likes: post.likes,
-                  imageUrls: post.imageUrls,
-                  likedByAvatars: post.likedByAvatars,
-                  isVerified: post.isVerified,
-                  avatarUrl: post.avatarUrl,
-                );
-              },
-            ),
-          ],
+        body: Padding(
+          padding: const EdgeInsets.only(top: 0), 
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              ListView.builder(
+                padding: EdgeInsets.zero, 
+                itemCount: ProfileData.threadsData.length,
+                itemBuilder: (_, i) {
+                  final post = ProfileData.threadsData[i];
+                  return PostComponent(
+                    username: post.username,
+                    timeAgo: post.timeAgo,
+                    text: post.text,
+                    replies: post.replies,
+                    likes: post.likes,
+                    imageUrls: post.imageUrls,
+                    likedByAvatars: post.likedByAvatars,
+                    isVerified: post.isVerified,
+                    avatarUrl: post.avatarUrl,
+                  );
+                },
+              ),
+              ListView.builder(
+                padding: EdgeInsets.zero, 
+                itemCount: ProfileData.repliesData.length,
+                itemBuilder: (_, i) {
+                  final post = ProfileData.repliesData[i];
+                  return PostComponent(
+                    username: post.username,
+                    timeAgo: post.timeAgo,
+                    text: post.text,
+                    replies: post.replies,
+                    likes: post.likes,
+                    imageUrls: post.imageUrls,
+                    likedByAvatars: post.likedByAvatars,
+                    isVerified: post.isVerified,
+                    avatarUrl: post.avatarUrl,
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
