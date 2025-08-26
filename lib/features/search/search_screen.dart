@@ -121,18 +121,28 @@ class _UserTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: Sizes.size16,
-        vertical: Sizes.size8,
-      ),
-      leading: _UserAvatar(user: user),
-      title: _UserInfo(user: user),
-      trailing: FollowButton(
-        onPressed: () {
-          print('${user.username} 팔로우 상태 변경');
-        },
-      ),
+    return Column(
+      children: [
+        ListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: Sizes.size16,
+            vertical: Sizes.size8,
+          ),
+          leading: _UserAvatar(user: user),
+          title: _UserInfo(user: user),
+          trailing: FollowButton(
+            onPressed: () {
+              print('${user.username} 팔로우 상태 변경');
+            },
+          ),
+        ),
+        Divider(
+          height: Sizes.size1,
+          thickness: Sizes.size1,
+          color: Colors.grey.shade200,
+          indent: Sizes.size60, // leading 영역만큼 들여쓰기
+        ),
+      ],
     );
   }
 }

@@ -179,7 +179,7 @@ class _PostComponentState extends State<PostComponent> {
                           isSelected: isLiked,
                           selectedColor: Colors.pink,
                         ),
-                        Gaps.h20,
+                        Gaps.h5,
                         _ActionIcon(
                           icon: Icons.mode_comment_outlined,
                           onTap: () =>
@@ -187,14 +187,14 @@ class _PostComponentState extends State<PostComponent> {
                           isSelected: isCommented,
                           selectedColor: Colors.amber,
                         ),
-                        Gaps.h20,
+                        Gaps.h5,
                         _ActionIcon(
                           icon: Icons.repeat,
                           onTap: () => setState(() => isReposted = !isReposted),
                           isSelected: isReposted,
                           selectedColor: Colors.green,
                         ),
-                        Gaps.h20,
+                        Gaps.h5,
                         _ActionIcon(
                           icon: Icons.send_outlined,
                           onTap: () => setState(() => isShared = !isShared),

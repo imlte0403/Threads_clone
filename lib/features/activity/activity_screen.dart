@@ -165,28 +165,38 @@ class _ActivityTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: Sizes.size16,
-        vertical: Sizes.size8,
-      ),
-      leading: _ActivityAvatar(
-        avatarUrl: activity.avatarUrl,
-        activityType: activity.type,
-      ),
-      title: _ActivityTitle(
-        username: activity.username,
-        content: activity.content,
-        timeAgo: activity.timeAgo,
-      ),
-      subtitle: activity.description.isNotEmpty
-          ? _ActivitySubtitle(description: activity.description)
-          : null,
-      trailing: _ActivityTrailing(
-        timeAgo: activity.timeAgo,
-        isFollowActivity: activity.type == ActivityType.follow,
-        username: activity.username,
-      ),
+    return Column(
+      children: [
+        ListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: Sizes.size16,
+            vertical: Sizes.size8,
+          ),
+          leading: _ActivityAvatar(
+            avatarUrl: activity.avatarUrl,
+            activityType: activity.type,
+          ),
+          title: _ActivityTitle(
+            username: activity.username,
+            content: activity.content,
+            timeAgo: activity.timeAgo,
+          ),
+          subtitle: activity.description.isNotEmpty
+              ? _ActivitySubtitle(description: activity.description)
+              : null,
+          trailing: _ActivityTrailing(
+            timeAgo: activity.timeAgo,
+            isFollowActivity: activity.type == ActivityType.follow,
+            username: activity.username,
+          ),
+        ),
+        Divider(
+          height: Sizes.size1,
+          thickness: Sizes.size1,
+          color: Colors.grey.shade200,
+          indent: Sizes.size60, 
+        ),
+      ],
     );
   }
 }
