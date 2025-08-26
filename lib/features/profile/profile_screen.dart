@@ -3,7 +3,6 @@ import 'profile_model.dart';
 import 'profile_content.dart';
 import '../../widgets/profile_appbar.dart';
 import '../../widgets/post_components.dart';
-import '../../constants/gaps.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

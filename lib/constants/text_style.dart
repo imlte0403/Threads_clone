@@ -62,4 +62,27 @@ class AppTextStyles {
     fontSize: 16,
     fontWeight: FontWeight.w600,
   );
+
+  static const TextStyle settings = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.normal,
+    color: Colors.black,
+  );
+
+  static const TextStyle logout = TextStyle(
+    color: Colors.blue,
+    fontWeight: FontWeight.w600,
+  );
+
+  static const TextStyle sectionTitle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: Colors.black,
+  );
+
+  static const TextStyle description = TextStyle(
+    fontSize: 12,
+    color: Colors.grey,
+    height: 1.3,
+  );
 }

@@ -5,7 +5,6 @@ import '../features/search/search_screen.dart';
 import '../features/activity/activity_screen.dart';
 import '../features/profile/profile_screen.dart';
 import '../constants/sizes.dart';
-import '../constants/gaps.dart';
 
 class AppNavBar extends StatefulWidget {
   final Function(int)? onIndexChanged;

@@ -146,7 +146,7 @@ class ProfileActionButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Sizes.size16),
+      padding: const EdgeInsets.symmetric(horizontal: Sizes.size20),
       child: Row(
         children: [
           Expanded(
@@ -220,7 +220,7 @@ class ProfileTabBarDelegate extends SliverPersistentHeaderDelegate {
       color: Colors.white,
       child: SizedBox(
         width: double.infinity,
-        height: 48.0,
+        height: 48,
         child: AnimatedBuilder(
           animation: tabController,
           builder: (_, __) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants/sizes.dart';
+import '../features/settings/settings_screen.dart';
 
 class ProfileAppBar extends StatelessWidget {
   const ProfileAppBar({super.key});
@@ -11,21 +12,14 @@ class ProfileAppBar extends StatelessWidget {
       floating: true,
       backgroundColor: Colors.white,
       elevation: 0,
-      automaticallyImplyLeading: false, 
+      automaticallyImplyLeading: false,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-         
-          Icon(
-            Icons.language,
-            size: Sizes.size28,
-            color: Colors.black,
-          ),
-          
-         
+          Icon(Icons.language, size: Sizes.size28, color: Colors.black),
+
           Row(
             children: [
-              
               GestureDetector(
                 onTap: () => print('Instagram icon pressed'),
                 child: Icon(
@@ -35,9 +29,16 @@ class ProfileAppBar extends StatelessWidget {
                 ),
               ),
               SizedBox(width: Sizes.size16),
-              
+
               GestureDetector(
-                onTap: () => print('Menu icon pressed'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const SettingsScreen(), // 이동할 화면
+                    ),
+                  );
+                },
                 child: Icon(
                   Icons.menu,
                   size: Sizes.size28,
