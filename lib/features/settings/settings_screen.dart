@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:thread_clone/constants/gaps.dart';
 import '../../constants/sizes.dart';
 import '../../constants/text_style.dart';
-import 'privacy_screen.dart'; // ✅ PrivacyScreen import
+import 'privacy_screen.dart'; 
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

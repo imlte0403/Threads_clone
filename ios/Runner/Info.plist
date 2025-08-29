@@ -45,5 +45,17 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<key>NSCameraUsageDescription</key>
+	<string>사진을 촬영하여 게시글에 첨부하기 위해 카메라 접근이 필요합니다.</string>
+	
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>기존 사진을 게시글에 첨부하기 위해 사진 라이브러리 접근이 필요합니다.</string>
+
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>사진을 저장하기 위해 사진 라이브러리 접근이 필요합니다.</string>
+
+	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
+
 </dict>
 </plist>
