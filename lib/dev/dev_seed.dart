@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 import '../constants/app_data.dart';
 
-Future<void> seedPosts({int count = 3, int repeat = 1}) async {
+Future<void> seedPosts({int count = 2, int repeat = 1}) async {
   final firestore = FirebaseFirestore.instance;
   final random = Random();
 

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:video_player/video_player.dart';
 import 'package:image/image.dart' as img;
 import 'package:thread_clone/constants/gaps.dart';
@@ -115,133 +116,61 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CupertinoPageScaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
+      navigationBar: CupertinoNavigationBar(
         backgroundColor: Colors.black,
-        leading: IconButton(
+        leading: CupertinoButton(
+          padding: EdgeInsets.zero,
           onPressed: _retake,
-          icon: const Icon(Icons.close, color: Colors.white),
+          child: const Text("다시 촬영", style: TextStyle(color: Colors.white)),
         ),
-        title: Text(
+        middle: Text(
           widget.isVideo ? '동영상 미리보기' : '사진 미리보기',
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
           ),
         ),
-        centerTitle: true,
-        elevation: 0,
+        trailing: CupertinoButton(
+          padding: EdgeInsets.zero,
+          onPressed: _useMedia,
+          child: const Text("사용하기", style: TextStyle(color: CupertinoColors.activeBlue, fontWeight: FontWeight.bold)),
+        ),
       ),
-      body: _isProcessing
+      child: _isProcessing
           ? const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(color: Colors.white),
+                  CupertinoActivityIndicator(color: Colors.white),
                   Gaps.v20,
                   Text(
                     "처리 중...",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    style: TextStyle(color: Colors.white, fontSize: 16, decoration: TextDecoration.none),
                   ),
                 ],
               ),
             )
           : Stack(
               children: [
-                // 미디어 표시
                 Center(
                   child: widget.isVideo
                       ? _videoPlayerController?.value.isInitialized == true
-                            ? AspectRatio(
-                                aspectRatio:
-                                    _videoPlayerController!.value.aspectRatio,
-                                child: VideoPlayer(_videoPlayerController!),
-                              )
-                            : const CircularProgressIndicator(
-                                color: Colors.white,
-                              )
+                          ? AspectRatio(
+                              aspectRatio:
+                                  _videoPlayerController!.value.aspectRatio,
+                              child: VideoPlayer(_videoPlayerController!),
+                            )
+                          : const CupertinoActivityIndicator(color: Colors.white)
                       : _compressedImageFile != null
-                      ? Image.file(_compressedImageFile!, fit: BoxFit.contain)
-                      : const CircularProgressIndicator(color: Colors.white),
+                          ? Image.file(_compressedImageFile!, fit: BoxFit.contain)
+                          : const CupertinoActivityIndicator(color: Colors.white),
                 ),
-
-                // 하단 버튼들
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(Sizes.size20),
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [Colors.black54, Colors.transparent],
-                      ),
-                    ),
-                    child: SafeArea(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: Colors.black45,
-                                borderRadius: BorderRadius.circular(25),
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 1,
-                                ),
-                              ),
-                              child: TextButton(
-                                onPressed: _retake,
-                                child: const Text(
-                                  "다시 촬영",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          Gaps.h16,
-
-                          Expanded(
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              child: TextButton(
-                                onPressed: _useMedia,
-                                child: const Text(
-                                  "사용하기",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
                 if (widget.isVideo &&
                     _videoPlayerController?.value.isInitialized == true)
                   Center(
-                    child: GestureDetector(
-                      onTap: () {
+                    child: CupertinoButton(
+                      onPressed: () {
                         setState(() {
                           if (_videoPlayerController!.value.isPlaying) {
                             _videoPlayerController!.pause();
@@ -250,19 +179,15 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                           }
                         });
                       },
-                      child: Container(
-                        padding: const EdgeInsets.all(Sizes.size12),
-                        decoration: const BoxDecoration(
-                          color: Colors.black45,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          _videoPlayerController!.value.isPlaying
-                              ? Icons.pause
-                              : Icons.play_arrow,
-                          color: Colors.white,
-                          size: 32,
-                        ),
+                      padding: const EdgeInsets.all(Sizes.size12),
+                      color: Colors.black.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(100),
+                      child: Icon(
+                        _videoPlayerController!.value.isPlaying
+                            ? CupertinoIcons.pause_fill
+                            : CupertinoIcons.play_fill,
+                        color: Colors.white,
+                        size: 48,
                       ),
                     ),
                   ),

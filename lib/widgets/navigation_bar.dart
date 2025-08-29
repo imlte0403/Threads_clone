@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import '../features/home/home.dart';
 import '../features/create_post/create_post_screen.dart';
 import '../features/search/search_screen.dart';
@@ -70,28 +71,34 @@ class _AppNavBarState extends State<AppNavBar> {
           height: Sizes.size56,
           destinations: const [
             NavigationDestination(
-              icon: Icon(Icons.home_outlined, size: Sizes.size36),
-              selectedIcon: Icon(Icons.home_rounded, size: Sizes.size36),
+              icon: Icon(CupertinoIcons.home, size: Sizes.size32),
+              selectedIcon: Icon(CupertinoIcons.house_fill, size: Sizes.size32),
               label: 'Home',
             ),
             NavigationDestination(
-              icon: Icon(Icons.search, size: Sizes.size36),
-              selectedIcon: Icon(Icons.search_rounded, size: Sizes.size36),
+              icon: Icon(CupertinoIcons.search, size: Sizes.size32),
+              selectedIcon: Icon(CupertinoIcons.search, size: Sizes.size32),
               label: 'Search',
             ),
             NavigationDestination(
-              icon: Icon(Icons.edit_outlined, size: Sizes.size36),
-              selectedIcon: Icon(Icons.edit_rounded, size: Sizes.size36),
+              icon: Icon(CupertinoIcons.plus_square, size: Sizes.size32),
+              selectedIcon: Icon(
+                CupertinoIcons.plus_square_fill,
+                size: Sizes.size32,
+              ),
               label: 'Post',
             ),
             NavigationDestination(
-              icon: Icon(Icons.favorite_border_outlined, size: Sizes.size36),
-              selectedIcon: Icon(Icons.favorite_rounded, size: Sizes.size36),
+              icon: Icon(CupertinoIcons.heart, size: Sizes.size32),
+              selectedIcon: Icon(CupertinoIcons.heart_fill, size: Sizes.size32),
               label: 'Likes',
             ),
             NavigationDestination(
-              icon: Icon(Icons.person_outline, size: Sizes.size36),
-              selectedIcon: Icon(Icons.person_rounded, size: Sizes.size36),
+              icon: Icon(CupertinoIcons.person, size: Sizes.size32),
+              selectedIcon: Icon(
+                CupertinoIcons.person_fill,
+                size: Sizes.size32,
+              ),
               label: 'Profile',
             ),
           ],

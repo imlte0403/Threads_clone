@@ -2,10 +2,19 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../constants/sizes.dart';
 import '../../constants/gaps.dart';
 import '../../widgets/media_picker.dart';
+
+// Helper class to hold media file and its type
+class _AttachedMediaFile {
+  final File file;
+  final bool isVideo;
+
+  _AttachedMediaFile({required this.file, required this.isVideo});
+}
 
 class _AvatarNetwork extends StatelessWidget {
   const _AvatarNetwork({required this.size, this.url});
@@ -66,8 +75,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   bool _isPosting = false;
   bool _isUploadingImages = false;
 
-  List<File> _attachedMedia = [];
-  bool _hasMedia = false;
+  final List<_AttachedMediaFile> _attachedMedia = [];
+  bool get _hasMedia => _attachedMedia.isNotEmpty;
 
   @override
   void initState() {
@@ -85,19 +94,22 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     super.dispose();
   }
 
-  // 미디어 첨부 함수
   Future<void> _attachMedia() async {
     try {
       final result = await MediaPicker.show(context);
 
-      if (result != null) {
+      if (result != null && mounted) {
         setState(() {
           if (result['isMultiple'] == true) {
-            _attachedMedia = List<File>.from(result['files']);
+            final List<File> files = result['files'];
+            for (var file in files) {
+              _attachedMedia.add(_AttachedMediaFile(file: file, isVideo: false));
+            }
           } else {
-            _attachedMedia = [result['file']];
+            final File file = result['file'];
+            final bool isVideo = result['isVideo'] ?? false;
+            _attachedMedia.add(_AttachedMediaFile(file: file, isVideo: isVideo));
           }
-          _hasMedia = _attachedMedia.isNotEmpty;
         });
       }
     } catch (e) {
@@ -112,7 +124,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   void _removeMedia(int index) {
     setState(() {
       _attachedMedia.removeAt(index);
-      _hasMedia = _attachedMedia.isNotEmpty;
     });
   }
 
@@ -126,44 +137,52 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         scrollDirection: Axis.horizontal,
         itemCount: _attachedMedia.length,
         itemBuilder: (context, index) {
-          final file = _attachedMedia[index];
-          final isVideo =
-              file.path.toLowerCase().contains('.mp4') ||
-              file.path.toLowerCase().contains('.mov');
+          final media = _attachedMedia[index];
+          final fileExists = media.file.existsSync();
 
           return Container(
             width: 120,
             height: 120,
             margin: const EdgeInsets.only(right: 12),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[300]!),
-            ),
             child: Stack(
               children: [
-                // 미디어 프리뷰
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: isVideo
-                      ? Container(
-                          width: double.infinity,
-                          height: double.infinity,
-                          color: Colors.black,
-                          child: const Icon(
-                            Icons.play_circle_outline,
-                            color: Colors.white,
-                            size: 40,
-                          ),
-                        )
-                      : Image.file(
-                          file,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: !fileExists
+                        ? Container(
+                            color: Colors.grey.shade100,
+                            child: const Center(
+                              child: Icon(
+                                Icons.error_outline,
+                                color: Colors.grey,
+                                size: 40,
+                              ),
+                            ),
+                          )
+                        : media.isVideo
+                            ? Container(
+                                width: double.infinity,
+                                height: double.infinity,
+                                color: Colors.black,
+                                child: const Icon(
+                                  Icons.play_circle_outline,
+                                  color: Colors.white,
+                                  size: 40,
+                                ),
+                              )
+                            : Image.file(
+                                media.file,
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                  ),
                 ),
-
-                // 제거 버튼
                 Positioned(
                   top: 4,
                   right: 4,
@@ -184,9 +203,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     ),
                   ),
                 ),
-
-                // 동영상 표시
-                if (isVideo)
+                if (media.isVideo)
                   const Positioned(
                     bottom: 4,
                     left: 4,
@@ -198,6 +215,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         },
       ),
     );
+  }
+
+  Future<String> _uploadFile(File file) async {
+    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    final Reference ref =
+        FirebaseStorage.instance.ref().child('posts/').child(fileName);
+
+    final UploadTask uploadTask = ref.putFile(file);
+    final TaskSnapshot snapshot = await uploadTask;
+    final String downloadUrl = await snapshot.ref.getDownloadURL();
+    return downloadUrl;
   }
 
   Future<void> _createPost() async {
@@ -212,19 +240,19 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       final firestore = FirebaseFirestore.instance;
       List<String> mediaUrls = [];
 
-      // TODO: Firebase Storage에 미디어 업로드
       if (_hasMedia) {
-        for (File mediaFile in _attachedMedia) {
-          mediaUrls.add(mediaFile.path);
+        for (_AttachedMediaFile media in _attachedMedia) {
+          final url = await _uploadFile(media.file);
+          mediaUrls.add(url);
         }
       }
-      //임시
+
       final postData = {
         'username': 'jane_mobbin',
         'avatarUrl': widget.avatarUrl,
         'isVerified': true,
         'text': _textController.text.trim(),
-        'mediaUrls': mediaUrls,
+        'imageUrls': mediaUrls,
         'mediaCount': _attachedMedia.length,
         'hasMedia': _hasMedia,
         'replies': 0,
@@ -240,7 +268,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         setState(() {
           _attachedMedia.clear();
           _hasText = false;
-          _hasMedia = false;
         });
 
         Navigator.pop(context);
@@ -254,7 +281,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         );
       }
     } catch (e) {
-      // 에러 처리
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -319,23 +345,19 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 왼쪽 프로필 섹션
                     Column(
                       children: [
-                        // 큰 프로필 이미지
                         _AvatarNetwork(
                           size: Sizes.size36,
                           url: widget.avatarUrl,
                         ),
                         Gaps.v8,
-                        // 회색 세로선
                         Container(
                           width: 2,
                           height: 100,
                           color: Colors.grey[300],
                         ),
                         Gaps.v8,
-                        // 작은 프로필 이미지
                         _AvatarNetwork(
                           size: Sizes.size20,
                           url: widget.avatarUrl,
@@ -343,12 +365,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       ],
                     ),
                     Gaps.h16,
-                    // 오른쪽 텍스트 입력 섹션
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // 사용자명
                           const Text(
                             'jane_mobbin',
                             style: TextStyle(
@@ -357,7 +377,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                             ),
                           ),
                           Gaps.v8,
-                          // 텍스트 입력 필드
                           TextField(
                             controller: _textController,
                             maxLines: null,
@@ -372,13 +391,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                             ),
                             style: const TextStyle(fontSize: 16),
                           ),
-
                           _buildAttachedMedia(),
-
                           Gaps.v16,
                           Row(
                             children: [
-                              // 미디어 첨부 버튼
                               InkWell(
                                 onTap: (_isPosting || _isUploadingImages)
                                     ? null
@@ -396,8 +412,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                   ),
                                 ),
                               ),
-
-                              // 미디어 첨부 상태 표시
                               if (_hasMedia && !_isUploadingImages) ...[
                                 const SizedBox(width: 12),
                                 Container(
@@ -419,8 +433,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                   ),
                                 ),
                               ],
-
-                              // 업로드 중 로딩 표시
                               if (_isUploadingImages) ...[
                                 const SizedBox(width: 8),
                                 const SizedBox(
@@ -451,8 +463,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 ),
               ),
             ),
-
-            // 하단 영역
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -462,7 +472,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     'Anyone can reply',
                     style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
-                  // Post 버튼
                   _isPosting
                       ? const SizedBox(
                           width: 20,
