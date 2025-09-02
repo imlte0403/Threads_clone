@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants/sizes.dart';
+import '../constants/app_colors.dart';
 import '../features/settings/settings_screen.dart';
 
 class ProfileAppBar extends StatelessWidget {
@@ -10,13 +11,13 @@ class ProfileAppBar extends StatelessWidget {
     return SliverAppBar(
       pinned: false,
       floating: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.systemBackground(context),
       elevation: 0,
       automaticallyImplyLeading: false,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(Icons.language, size: Sizes.size28, color: Colors.black),
+          Icon(Icons.language, size: Sizes.size28, color: AppColors.label(context)),
 
           Row(
             children: [
@@ -25,7 +26,7 @@ class ProfileAppBar extends StatelessWidget {
                 child: Icon(
                   Icons.camera_alt_outlined,
                   size: Sizes.size28,
-                  color: Colors.black,
+                  color: AppColors.label(context),
                 ),
               ),
               SizedBox(width: Sizes.size16),
@@ -42,7 +43,7 @@ class ProfileAppBar extends StatelessWidget {
                 child: Icon(
                   Icons.menu,
                   size: Sizes.size28,
-                  color: Colors.black,
+                  color: AppColors.label(context),
                 ),
               ),
             ],

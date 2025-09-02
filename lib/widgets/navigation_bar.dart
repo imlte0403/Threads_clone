@@ -6,6 +6,7 @@ import '../features/search/search_screen.dart';
 import '../features/activity/activity_screen.dart';
 import '../features/profile/profile_screen.dart';
 import '../constants/sizes.dart';
+import '../constants/app_colors.dart';
 
 class AppNavBar extends StatefulWidget {
   final Function(int)? onIndexChanged;
@@ -36,13 +37,13 @@ class _AppNavBarState extends State<AppNavBar> {
       body: IndexedStack(index: _index, children: _screens),
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.systemBackground(context),
           indicatorColor: Colors.transparent,
           iconTheme: WidgetStateProperty.resolveWith<IconThemeData>(
             (states) => IconThemeData(
               color: states.contains(WidgetState.selected)
-                  ? Colors.black
-                  : Colors.grey[400],
+                  ? AppColors.label(context)
+                  : AppColors.quaternaryLabel(context),
             ),
           ),
         ),

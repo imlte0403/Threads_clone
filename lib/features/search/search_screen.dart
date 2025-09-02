@@ -5,6 +5,7 @@ import '../../constants/sizes.dart';
 import '../../constants/gaps.dart';
 import '../../constants/text_style.dart';
 import '../../constants/app_data.dart';
+import '../../constants/app_colors.dart';
 import '../../widgets/follow_btn.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -50,7 +51,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.systemBackground(context),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +72,7 @@ class _ScreenHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(Sizes.size16),
-      child: Text('Search', style: AppTextStyles.screenTitle),
+      child: Text('Search', style: AppTextStyles.screenTitle(context)),
     );
   }
 }
@@ -88,9 +89,9 @@ class _SearchField extends StatelessWidget {
       child: CupertinoSearchTextField(
         controller: controller,
         placeholder: 'Search',
-        style: AppTextStyles.commonText,
+        style: AppTextStyles.commonText(context),
         decoration: BoxDecoration(
-          color: Colors.grey[100],
+          color: AppColors.secondarySystemBackground(context),
           borderRadius: BorderRadius.circular(Sizes.size10),
         ),
       ),
@@ -139,7 +140,7 @@ class _UserTile extends StatelessWidget {
         Divider(
           height: Sizes.size1,
           thickness: Sizes.size1,
-          color: Colors.grey.shade200,
+          color: AppColors.separator(context),
           indent: Sizes.size60, // leading 영역만큼 들여쓰기
         ),
       ],
@@ -162,14 +163,14 @@ class _UserAvatar extends StatelessWidget {
           imageUrl: user.avatarUrl,
           fit: BoxFit.cover,
           placeholder: (context, url) => Container(
-            color: Colors.grey.shade200,
+            color: AppColors.secondarySystemBackground(context),
             child: const Center(
               child: CircularProgressIndicator(strokeWidth: Sizes.size2),
             ),
           ),
           errorWidget: (context, url, error) => Container(
             color: const Color(0xFFE3F2FD),
-            child: Icon(Icons.person, color: Colors.white, size: Sizes.size28),
+            child: Icon(Icons.person, color: AppColors.systemBackground(context), size: Sizes.size28),
           ),
         ),
       ),
@@ -189,9 +190,9 @@ class _UserInfo extends StatelessWidget {
       children: [
         _UsernameRow(user: user),
         Gaps.v2,
-        Text(user.displayName, style: AppTextStyles.userIntroduction),
+        Text(user.displayName, style: AppTextStyles.userIntroduction(context)),
         Gaps.v6,
-        Text('${user.followers} followers', style: AppTextStyles.commonText),
+        Text('${user.followers} followers', style: AppTextStyles.commonText(context)),
       ],
     );
   }
@@ -206,7 +207,7 @@ class _UsernameRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(user.username, style: AppTextStyles.username),
+        Text(user.username, style: AppTextStyles.username(context)),
         if (user.isVerified) ...[
           Gaps.h4,
           Icon(Icons.verified, size: Sizes.size14, color: Colors.blue),

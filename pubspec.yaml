@@ -34,6 +34,7 @@ dev_dependencies:
 flutter:
   assets: 
     - assets/Threads-Logo.png
+    - assets/Threads-Logo-white.png
     - assets/transparent.png
 
   uses-material-design: true

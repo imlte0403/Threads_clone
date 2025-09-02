@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:thread_clone/constants/gaps.dart';
 import '../../constants/sizes.dart';
 import '../../constants/text_style.dart';
+import '../../constants/app_colors.dart';
 import 'privacy_screen.dart'; 
 
 class SettingsScreen extends StatelessWidget {
@@ -14,10 +15,10 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           "Settings",
-          style: AppTextStyles.screenTitle.copyWith(fontSize: Sizes.size20),
+          style: AppTextStyles.screenTitle(context).copyWith(fontSize: Sizes.size20),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.systemBackground(context),
         leadingWidth: 100,
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
@@ -26,12 +27,12 @@ class SettingsScreen extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.arrow_back_ios, color: Colors.black),
+                Icon(Icons.arrow_back_ios, color: AppColors.label(context)),
                 Gaps.h2,
-                const Text(
+                Text(
                   'Back',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: AppColors.label(context),
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
@@ -42,27 +43,27 @@ class SettingsScreen extends StatelessWidget {
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
-          child: Container(color: Colors.grey.shade300, height: 1.0),
+          child: Container(color: AppColors.separator(context), height: 1.0),
         ),
       ),
       body: ListView(
         children: [
           ListTile(
-            leading: const Icon(Icons.person_add_alt, color: Colors.black),
-            title: const Text(
+            leading: Icon(Icons.person_add_alt, color: AppColors.label(context)),
+            title: Text(
               "Follow and invite friends",
-              style: AppTextStyles.settings,
+              style: AppTextStyles.settings(context),
             ),
             onTap: () {},
           ),
           ListTile(
-            leading: const Icon(Icons.notifications_none, color: Colors.black),
-            title: const Text("Notifications", style: AppTextStyles.settings),
+            leading: Icon(Icons.notifications_none, color: AppColors.label(context)),
+            title: Text("Notifications", style: AppTextStyles.settings(context)),
             onTap: () {},
           ),
           ListTile(
-            leading: const Icon(Icons.lock_outline, color: Colors.black),
-            title: const Text("Privacy", style: AppTextStyles.settings),
+            leading: Icon(Icons.lock_outline, color: AppColors.label(context)),
+            title: Text("Privacy", style: AppTextStyles.settings(context)),
             onTap: () {
               Navigator.push(
                 context,
@@ -71,26 +72,26 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(
+            leading: Icon(
               Icons.account_circle_outlined,
-              color: Colors.black,
+              color: AppColors.label(context),
             ),
-            title: const Text("Account", style: AppTextStyles.settings),
+            title: Text("Account", style: AppTextStyles.settings(context)),
             onTap: () {},
           ),
           ListTile(
-            leading: const Icon(Icons.help_outline, color: Colors.black),
-            title: const Text("Help", style: AppTextStyles.settings),
+            leading: Icon(Icons.help_outline, color: AppColors.label(context)),
+            title: Text("Help", style: AppTextStyles.settings(context)),
             onTap: () {},
           ),
           ListTile(
-            leading: const Icon(Icons.info_outline, color: Colors.black),
-            title: const Text("About", style: AppTextStyles.settings),
+            leading: Icon(Icons.info_outline, color: AppColors.label(context)),
+            title: Text("About", style: AppTextStyles.settings(context)),
             onTap: () {},
           ),
           const Divider(height: Sizes.size2, thickness: 0.5),
           ListTile(
-            title: const Text("Log out", style: AppTextStyles.logout),
+            title: Text("Log out", style: AppTextStyles.logout),
             onTap: () {},
           ),
         ],

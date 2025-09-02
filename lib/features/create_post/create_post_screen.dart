@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import '../../constants/sizes.dart';
 import '../../constants/gaps.dart';
 import '../../widgets/media_picker.dart';
+import '../../constants/app_colors.dart';
 
 // Helper class to hold media file and its type
 class _AttachedMediaFile {
@@ -30,8 +31,12 @@ class _AvatarNetwork extends StatelessWidget {
         height: size,
         child: ClipOval(
           child: Container(
-            color: const Color(0xFFE3F2FD),
-            child: Icon(Icons.person, color: Colors.white, size: size * 0.6),
+            color: Theme.of(context).colorScheme.secondary,
+            child: Icon(
+              Icons.person,
+              color: Theme.of(context).colorScheme.onSecondary,
+              size: size * 0.6,
+            ),
           ),
         ),
       );
@@ -45,14 +50,18 @@ class _AvatarNetwork extends StatelessWidget {
           imageUrl: u,
           fit: BoxFit.cover,
           placeholder: (context, url) => Container(
-            color: Colors.grey.shade200,
+            color: Theme.of(context).colorScheme.surface,
             child: const Center(
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
           ),
           errorWidget: (context, url, error) => Container(
-            color: const Color(0xFFE3F2FD),
-            child: Icon(Icons.person, color: Colors.white, size: size * 0.6),
+            color: Theme.of(context).colorScheme.secondary,
+            child: Icon(
+              Icons.person,
+              color: Theme.of(context).colorScheme.onSecondary,
+              size: size * 0.6,
+            ),
           ),
         ),
       ),
@@ -103,12 +112,16 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           if (result['isMultiple'] == true) {
             final List<File> files = result['files'];
             for (var file in files) {
-              _attachedMedia.add(_AttachedMediaFile(file: file, isVideo: false));
+              _attachedMedia.add(
+                _AttachedMediaFile(file: file, isVideo: false),
+              );
             }
           } else {
             final File file = result['file'];
             final bool isVideo = result['isVideo'] ?? false;
-            _attachedMedia.add(_AttachedMediaFile(file: file, isVideo: isVideo));
+            _attachedMedia.add(
+              _AttachedMediaFile(file: file, isVideo: isVideo),
+            );
           }
         });
       }
@@ -149,38 +162,40 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade300),
+                    border: Border.all(color: Theme.of(context).dividerColor),
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: !fileExists
                         ? Container(
-                            color: Colors.grey.shade100,
-                            child: const Center(
+                            color: Theme.of(context).colorScheme.surface,
+                            child: Center(
                               child: Icon(
                                 Icons.error_outline,
-                                color: Colors.grey,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withOpacity(0.6),
                                 size: 40,
                               ),
                             ),
                           )
                         : media.isVideo
-                            ? Container(
-                                width: double.infinity,
-                                height: double.infinity,
-                                color: Colors.black,
-                                child: const Icon(
-                                  Icons.play_circle_outline,
-                                  color: Colors.white,
-                                  size: 40,
-                                ),
-                              )
-                            : Image.file(
-                                media.file,
-                                width: double.infinity,
-                                height: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
+                        ? Container(
+                            width: double.infinity,
+                            height: double.infinity,
+                            color: Colors.black,
+                            child: const Icon(
+                              Icons.play_circle_outline,
+                              color: Colors.white,
+                              size: 40,
+                            ),
+                          )
+                        : Image.file(
+                            media.file,
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
                 Positioned(
@@ -219,8 +234,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   Future<String> _uploadFile(File file) async {
     final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    final Reference ref =
-        FirebaseStorage.instance.ref().child('posts/').child(fileName);
+    final Reference ref = FirebaseStorage.instance
+        .ref()
+        .child('posts/')
+        .child(fileName);
 
     final UploadTask uploadTask = ref.putFile(file);
     final TaskSnapshot snapshot = await uploadTask;
@@ -308,9 +325,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.white,
           elevation: 0,
           leadingWidth: 80,
           leading: TextButton(
@@ -318,23 +333,21 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             child: Text(
               'Cancel',
               style: TextStyle(
-                color: _isPosting ? Colors.grey : Colors.black,
+                color: _isPosting
+                    ? Theme.of(context).disabledColor
+                    : Theme.of(context).colorScheme.onSurface,
                 fontSize: 16,
               ),
             ),
           ),
           title: const Text(
             'New thread',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           centerTitle: true,
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(1.0),
-            child: Container(color: Colors.grey[300], height: 1.0),
+          bottom: const PreferredSize(
+            preferredSize: Size.fromHeight(1.0),
+            child: Divider(height: 1.0),
           ),
         ),
         body: Column(
@@ -345,25 +358,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      children: [
-                        _AvatarNetwork(
-                          size: Sizes.size36,
-                          url: widget.avatarUrl,
-                        ),
-                        Gaps.v8,
-                        Container(
-                          width: 2,
-                          height: 100,
-                          color: Colors.grey[300],
-                        ),
-                        Gaps.v8,
-                        _AvatarNetwork(
-                          size: Sizes.size20,
-                          url: widget.avatarUrl,
-                        ),
-                      ],
-                    ),
+                    _AvatarNetwork(size: Sizes.size36, url: widget.avatarUrl),
                     Gaps.h16,
                     Expanded(
                       child: Column(
@@ -381,15 +376,19 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                             controller: _textController,
                             maxLines: null,
                             enabled: !_isPosting,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
+                              filled: false,
                               hintText: 'Start a thread...',
                               hintStyle: TextStyle(
-                                color: Colors.grey,
+                                color: Theme.of(context).hintColor,
                                 fontSize: 16,
                               ),
                               border: InputBorder.none,
                             ),
-                            style: const TextStyle(fontSize: 16),
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: AppColors.label(context),
+                            ),
                           ),
                           _buildAttachedMedia(),
                           Gaps.v16,
@@ -404,10 +403,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                   child: Icon(
                                     Icons.attach_file,
                                     color: (_isPosting || _isUploadingImages)
-                                        ? Colors.grey[400]
+                                        ? Theme.of(context).disabledColor
                                         : (_hasMedia
-                                              ? Colors.blue
-                                              : Colors.grey[600]),
+                                              ? Theme.of(context).primaryColor
+                                              : Theme.of(context).hintColor),
                                     size: 20,
                                   ),
                                 ),
@@ -420,13 +419,15 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                     vertical: 4,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.blue[50],
+                                    color: Theme.of(
+                                      context,
+                                    ).primaryColor.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
                                     '${_attachedMedia.length}개 첨부됨',
                                     style: TextStyle(
-                                      color: Colors.blue[700],
+                                      color: Theme.of(context).primaryColor,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -435,13 +436,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                               ],
                               if (_isUploadingImages) ...[
                                 const SizedBox(width: 8),
-                                const SizedBox(
+                                SizedBox(
                                   width: 16,
                                   height: 16,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.blue,
+                                      Theme.of(context).primaryColor,
                                     ),
                                   ),
                                 ),
@@ -449,7 +450,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                 Text(
                                   '처리중...',
                                   style: TextStyle(
-                                    color: Colors.grey[600],
+                                    color: Theme.of(context).hintColor,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -470,16 +471,19 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 children: [
                   Text(
                     'Anyone can reply',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                    style: TextStyle(
+                      color: Theme.of(context).hintColor,
+                      fontSize: 14,
+                    ),
                   ),
                   _isPosting
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.blue,
+                              Theme.of(context).primaryColor,
                             ),
                           ),
                         )
@@ -488,7 +492,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           child: Text(
                             'Post',
                             style: TextStyle(
-                              color: canPost ? Colors.blue : Colors.grey,
+                              color: canPost
+                                  ? Theme.of(context).primaryColor
+                                  : Theme.of(context).disabledColor,
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),

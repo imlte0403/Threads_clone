@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/sizes.dart';
 import '../constants/text_style.dart';
+import '../constants/app_colors.dart';
 
 class FollowButton extends StatefulWidget {
   final bool initialFollowState;
@@ -38,7 +39,7 @@ class _FollowButtonState extends State<FollowButton> {
       width: Sizes.size96,
       height: Sizes.size32,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300, width: Sizes.size1),
+        border: Border.all(color: AppColors.separator(context), width: Sizes.size1),
         borderRadius: BorderRadius.circular(Sizes.size10),
       ),
       child: TextButton(
@@ -49,7 +50,7 @@ class _FollowButtonState extends State<FollowButton> {
         ),
         child: Text(
           isFollowing ? 'Following' : 'Follow',
-          style: AppTextStyles.followingButton,
+          style: AppTextStyles.followingButton(context),
         ),
       ),
     );

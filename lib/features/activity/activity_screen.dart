@@ -4,6 +4,7 @@ import '../../constants/sizes.dart';
 import '../../constants/gaps.dart';
 import '../../constants/text_style.dart';
 import '../../constants/app_data.dart';
+import '../../constants/app_colors.dart';
 import '../../widgets/follow_btn.dart';
 
 class ActivityScreen extends StatefulWidget {
@@ -64,7 +65,7 @@ class _ActivityScreenState extends State<ActivityScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.systemBackground(context),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,7 +86,7 @@ class _ScreenHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(Sizes.size16),
-      child: Text('Activity', style: AppTextStyles.screenTitle),
+      child: Text('Activity', style: AppTextStyles.screenTitle(context)),
     );
   }
 }
@@ -117,9 +118,9 @@ class _CustomTabBar extends StatelessWidget {
                 width: Sizes.size96,
                 height: Sizes.size40,
                 decoration: BoxDecoration(
-                  color: isSelected ? Colors.black : Colors.white,
+                  color: isSelected ? AppColors.label(context) : AppColors.systemBackground(context),
                   border: Border.all(
-                    color: isSelected ? Colors.black : Colors.grey.shade300,
+                    color: isSelected ? AppColors.label(context) : AppColors.separator(context),
                     width: Sizes.size1,
                   ),
                   borderRadius: BorderRadius.circular(Sizes.size10),
@@ -128,8 +129,8 @@ class _CustomTabBar extends StatelessWidget {
                   child: Text(
                     tab,
                     style: isSelected
-                        ? AppTextStyles.tabSelected
-                        : AppTextStyles.tabUnselected,
+                        ? AppTextStyles.tabSelected(context)
+                        : AppTextStyles.tabUnselected(context),
                   ),
                 ),
               ),
@@ -193,7 +194,7 @@ class _ActivityTile extends StatelessWidget {
         Divider(
           height: Sizes.size1,
           thickness: Sizes.size1,
-          color: Colors.grey.shade200,
+          color: AppColors.separator(context),
           indent: Sizes.size60, 
         ),
       ],
@@ -234,14 +235,14 @@ class _ProfileImage extends StatelessWidget {
           imageUrl: url,
           fit: BoxFit.cover,
           placeholder: (context, url) => Container(
-            color: Colors.grey.shade200,
+            color: AppColors.secondarySystemBackground(context),
             child: const Center(
               child: CircularProgressIndicator(strokeWidth: Sizes.size2),
             ),
           ),
           errorWidget: (context, url, error) => Container(
             color: const Color(0xFFE3F2FD),
-            child: Icon(Icons.person, color: Colors.white, size: size * 0.5),
+            child: Icon(Icons.person, color: AppColors.systemBackground(context), size: size * 0.5),
           ),
         ),
       ),
@@ -265,7 +266,7 @@ class _ActivityIcon extends StatelessWidget {
         decoration: BoxDecoration(
           color: ActivityData.activityColors[type],
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: Sizes.size2),
+          border: Border.all(color: AppColors.systemBackground(context), width: Sizes.size2),
         ),
         child: Icon(
           ActivityData.activityIcons[type],
@@ -295,9 +296,9 @@ class _ActivityTitle extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(username, style: AppTextStyles.username),
+            Text(username, style: AppTextStyles.username(context)),
             Gaps.h8,
-            Text(timeAgo, style: AppTextStyles.system),
+            Text(timeAgo, style: AppTextStyles.system(context)),
           ],
         ),
         Gaps.v2,
@@ -316,7 +317,7 @@ class _ActivitySubtitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: Sizes.size4),
-      child: Text(description, style: AppTextStyles.commonText),
+      child: Text(description, style: AppTextStyles.commonText(context)),
     );
   }
 }

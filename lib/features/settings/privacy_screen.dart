@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../constants/sizes.dart';
 import '../../constants/gaps.dart';
 import '../../constants/text_style.dart';
+import '../../constants/app_colors.dart';
 
 class PrivacyScreen extends StatefulWidget {
   const PrivacyScreen({super.key});
@@ -16,9 +17,9 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.systemBackground(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.systemBackground(context),
         elevation: 0,
         leadingWidth: 100,
         leading: GestureDetector(
@@ -28,12 +29,12 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.arrow_back_ios, color: Colors.black),
+                Icon(Icons.arrow_back_ios, color: AppColors.label(context)),
                 Gaps.h2,
-                const Text(
+                Text(
                   'Back',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: AppColors.label(context),
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
@@ -44,13 +45,13 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
         ),
         title: Text(
           "Privacy",
-          style: AppTextStyles.screenTitle.copyWith(fontSize: Sizes.size20),
+          style: AppTextStyles.screenTitle(context).copyWith(fontSize: Sizes.size20),
         ),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
           child: Container(
-            color: Colors.grey.shade300, // 연회색 divider
+            color: AppColors.separator(context),
             height: 1.0,
           ),
         ),
@@ -61,55 +62,57 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           SwitchListTile.adaptive(
             value: _isPrivate,
             onChanged: (v) => setState(() => _isPrivate = v),
-            title: const Text("Private profile", style: AppTextStyles.settings),
-            activeColor: Colors.white,
-            activeTrackColor: Colors.black,
-            inactiveThumbColor: Colors.white,
-            inactiveTrackColor: Colors.grey,
+            title: Text("Private profile", style: AppTextStyles.settings(context)),
+            activeColor: AppColors.systemBackground(context),
+            activeTrackColor: AppColors.label(context),
+            inactiveThumbColor: AppColors.systemBackground(context),
+            inactiveTrackColor: AppColors.quaternaryLabel(context),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: Sizes.size16,
             ),
           ),
 
           ListTile(
-            leading: const Icon(Icons.alternate_email, color: Colors.black),
+            leading: Icon(Icons.alternate_email, color: AppColors.label(context)),
             title: const Text("Mentions"),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  "Everyone",
-                  style: TextStyle(color: Colors.grey, fontSize: Sizes.size14),
+                Builder(
+                  builder: (context) => Text(
+                    "Everyone",
+                    style: TextStyle(color: AppColors.tertiaryLabel(context), fontSize: Sizes.size14),
+                  ),
                 ),
                 const SizedBox(width: 4),
-                const Icon(Icons.chevron_right, color: Colors.grey),
+                Icon(Icons.chevron_right, color: AppColors.tertiaryLabel(context)),
               ],
             ),
             onTap: () {},
           ),
 
           ListTile(
-            leading: const Icon(Icons.volume_off, color: Colors.black),
+            leading: Icon(Icons.volume_off, color: AppColors.label(context)),
             title: const Text("Muted"),
-            trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+            trailing: Icon(Icons.chevron_right, color: AppColors.tertiaryLabel(context)),
             onTap: () {},
           ),
 
           ListTile(
-            leading: const Icon(Icons.visibility_off, color: Colors.black),
+            leading: Icon(Icons.visibility_off, color: AppColors.label(context)),
             title: const Text("Hidden Words"),
-            trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+            trailing: Icon(Icons.chevron_right, color: AppColors.tertiaryLabel(context)),
             onTap: () {},
           ),
 
           ListTile(
-            leading: const Icon(Icons.group, color: Colors.black),
+            leading: Icon(Icons.group, color: AppColors.label(context)),
             title: const Text("Profiles you follow"),
-            trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+            trailing: Icon(Icons.chevron_right, color: AppColors.tertiaryLabel(context)),
             onTap: () {},
           ),
 
-          Container(color: Colors.grey.shade200, height: Sizes.size1),
+          Container(color: AppColors.separator(context), height: Sizes.size1),
 
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,10 +125,10 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
                         "Other privacy settings",
-                        style: AppTextStyles.sectionTitle,
+                        style: AppTextStyles.sectionTitle(context),
                       ),
                       Gaps.v8,
                       Text(
@@ -141,22 +144,22 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                   right: Sizes.size24,
                   top: Sizes.size16,
                 ),
-                child: const Icon(Icons.open_in_new, color: Colors.grey),
+                child: Icon(Icons.open_in_new, color: AppColors.tertiaryLabel(context)),
               ),
             ],
           ),
 
           ListTile(
-            leading: const Icon(Icons.cancel, color: Colors.black),
+            leading: Icon(Icons.cancel, color: AppColors.label(context)),
             title: const Text("Blocked profiles"),
-            trailing: const Icon(Icons.open_in_new, color: Colors.grey),
+            trailing: Icon(Icons.open_in_new, color: AppColors.tertiaryLabel(context)),
             onTap: () {},
           ),
 
           ListTile(
-            leading: const Icon(Icons.favorite_border, color: Colors.black),
+            leading: Icon(Icons.favorite_border, color: AppColors.label(context)),
             title: const Text("Hide likes"),
-            trailing: const Icon(Icons.open_in_new, color: Colors.grey),
+            trailing: Icon(Icons.open_in_new, color: AppColors.tertiaryLabel(context)),
             onTap: () {},
           ),
         ],

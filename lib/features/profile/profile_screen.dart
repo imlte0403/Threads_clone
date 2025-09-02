@@ -3,6 +3,7 @@ import 'profile_model.dart';
 import 'profile_content.dart';
 import '../../widgets/profile_appbar.dart';
 import '../../widgets/post_components.dart';
+import '../../constants/app_colors.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -58,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.systemBackground(context),
       body: NestedScrollView(
         headerSliverBuilder: (context, innerScrolled) => [
           const ProfileAppBar(),

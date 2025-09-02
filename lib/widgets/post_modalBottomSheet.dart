@@ -3,6 +3,7 @@ import '../features/report/report_screen.dart';
 import '../constants/sizes.dart';
 import '../constants/gaps.dart';
 import '../constants/text_style.dart';
+import '../constants/app_colors.dart';
 
 class PostModalBottomSheet extends StatelessWidget {
   const PostModalBottomSheet({super.key});
@@ -18,19 +19,19 @@ class PostModalBottomSheet extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(Sizes.size20),
-              color: Colors.grey[100],
+              color: AppColors.secondarySystemBackground(context),
             ),
             child: Column(
               children: [
                 ListTile(
-                  title: Text('Unfollow', style: AppTextStyles.username),
+                  title: Text('Unfollow', style: AppTextStyles.username(context)),
                   onTap: () {
                     Navigator.pop(context);
                   },
                 ),
-                Divider(height: Sizes.size1, color: Colors.grey[300]),
+                Divider(height: Sizes.size1, color: AppColors.separator(context)),
                 ListTile(
-                  title: Text('Mute', style: AppTextStyles.username),
+                  title: Text('Mute', style: AppTextStyles.username(context)),
                   onTap: () {
                     Navigator.pop(context);
                   },
@@ -42,17 +43,17 @@ class PostModalBottomSheet extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(Sizes.size20),
-              color: Colors.grey[100],
+              color: AppColors.secondarySystemBackground(context),
             ),
             child: Column(
               children: [
                 ListTile(
-                  title: Text('Hide', style: AppTextStyles.username),
+                  title: Text('Hide', style: AppTextStyles.username(context)),
                   onTap: () {
                     Navigator.pop(context);
                   },
                 ),
-                Divider(height: Sizes.size1, color: Colors.grey[300]),
+                Divider(height: Sizes.size1, color: AppColors.separator(context)),
                 ListTile(
                   title: Text(
                     'Report',

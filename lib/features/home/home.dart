@@ -5,6 +5,7 @@ import '../../widgets/appbar.dart';
 import '../../widgets/post_components.dart';
 import '../../models/post_model.dart';
 import '../../constants/gaps.dart';
+import '../../constants/app_colors.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -59,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
             physics: const BouncingScrollPhysics(),
             slivers: [
               // 커스텀 앱 바
-              const CustomAppBar(logoPath: 'assets/Threads-Logo.png'),
+              const CustomAppBar(),
               // firebase 데이터 연동
               StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 stream: FirebaseFirestore.instance
@@ -68,14 +69,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     .snapshots(),
                 builder: (context, snap) {
                   if (snap.connectionState == ConnectionState.waiting) {
-                    return const SliverToBoxAdapter(
+                    return SliverToBoxAdapter(
                       child: Padding(
                         padding: EdgeInsets.all(32),
                         child: Center(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.black,
+                          child: Builder(
+                            builder: (context) => CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                AppColors.label(context),
+                              ),
                             ),
                           ),
                         ),
@@ -93,12 +96,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               Icon(
                                 Icons.error_outline,
                                 size: 48,
-                                color: Colors.grey[400],
+                                color: AppColors.quaternaryLabel(context),
                               ),
                               Gaps.h16,
                               Text(
                                 '불러오기 오류: ${snap.error}',
-                                style: TextStyle(color: Colors.grey[600]),
+                                style: TextStyle(color: AppColors.tertiaryLabel(context)),
                                 textAlign: TextAlign.center,
                               ),
                             ],
@@ -119,14 +122,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               Icon(
                                 Icons.article_outlined,
                                 size: 64,
-                                color: Colors.grey[400],
+                                color: AppColors.quaternaryLabel(context),
                               ),
                               Gaps.h16,
                               Text(
                                 '아직 게시글이 없어요',
                                 style: TextStyle(
                                   fontSize: 18,
-                                  color: Colors.grey[600],
+                                  color: AppColors.tertiaryLabel(context),
                                 ),
                               ),
                               Gaps.h8,
@@ -134,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 '첫 번째 포스트를 작성해보세요!',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.grey[500],
+                                  color: AppColors.tertiaryLabel(context),
                                 ),
                               ),
                             ],
@@ -200,14 +203,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             borderRadius: BorderRadius.circular(25),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: AppColors.label(context).withOpacity(0.1),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
                             ],
                           ),
                           child: Material(
-                            color: Colors.white,
+                            color: AppColors.systemBackground(context),
                             borderRadius: BorderRadius.circular(25),
                             child: InkWell(
                               onTap: _scrollToTop,
@@ -222,14 +225,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     Icon(
                                       Icons.keyboard_arrow_up_rounded,
-                                      color: Colors.grey[700],
+                                      color: AppColors.secondaryLabel(context),
                                       size: 20,
                                     ),
                                     Gaps.v4,
                                     Text(
                                       'TOP',
                                       style: TextStyle(
-                                        color: Colors.grey[700],
+                                        color: AppColors.secondaryLabel(context),
                                         fontWeight: FontWeight.w600,
                                         fontSize: 14,
                                       ),

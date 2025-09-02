@@ -4,6 +4,7 @@ import 'package:thread_clone/widgets/post_modalBottomSheet.dart';
 import '../constants/text_style.dart';
 import '../constants/sizes.dart';
 import '../constants/gaps.dart';
+import '../constants/app_colors.dart';
 
 class PostComponent extends StatefulWidget {
   const PostComponent({
@@ -47,8 +48,12 @@ class _AvatarNetwork extends StatelessWidget {
         height: size,
         child: ClipOval(
           child: Container(
-            color: const Color(0xFFE3F2FD),
-            child: Icon(Icons.person, color: Colors.white, size: size * 0.6),
+            color: AppColors.secondarySystemBackground(context),
+            child: Icon(
+              Icons.person,
+              color: AppColors.systemBackground(context),
+              size: size * 0.6,
+            ),
           ),
         ),
       );
@@ -62,14 +67,18 @@ class _AvatarNetwork extends StatelessWidget {
           imageUrl: u,
           fit: BoxFit.cover,
           placeholder: (context, url) => Container(
-            color: Colors.grey.shade200,
+            color: AppColors.secondarySystemBackground(context),
             child: const Center(
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
           ),
           errorWidget: (context, url, error) => Container(
-            color: const Color(0xFFE3F2FD),
-            child: Icon(Icons.person, color: Colors.white, size: size * 0.6),
+            color: AppColors.secondarySystemBackground(context),
+            child: Icon(
+              Icons.person,
+              color: AppColors.systemBackground(context),
+              size: size * 0.6,
+            ),
           ),
         ),
       ),
@@ -106,13 +115,7 @@ class _PostComponentState extends State<PostComponent> {
                   Expanded(
                     child: Container(
                       width: Sizes.size2,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Colors.grey.shade300, Colors.grey.shade100],
-                        ),
-                      ),
+                      color: AppColors.separator(context),
                     ),
                   ),
                   Gaps.v8,
@@ -131,25 +134,33 @@ class _PostComponentState extends State<PostComponent> {
                     Row(
                       children: [
                         //유저 네임
-                        Text(widget.username, style: AppTextStyles.username),
+                        Text(
+                          widget.username,
+                          style: AppTextStyles.username(context),
+                        ),
                         // 인증 마크
                         if (widget.isVerified) ...[
                           Gaps.h4,
-                          const Icon(
+                          Icon(
                             Icons.verified,
                             size: Sizes.size16,
-                            color: Colors.blue,
+                            color: AppColors.accent(context),
                           ),
                         ],
                         const Spacer(),
                         // 시간
-                        Text(widget.timeAgo, style: AppTextStyles.system),
+                        Text(
+                          widget.timeAgo,
+                          style: AppTextStyles.system(context),
+                        ),
                         Gaps.h12,
                         // ... 버튼
                         GestureDetector(
                           onTap: () {
                             showModalBottomSheet(
-                              backgroundColor: Colors.white,
+                              backgroundColor: AppColors.systemBackground(
+                                context,
+                              ),
                               context: context,
                               builder: (context) => PostModalBottomSheet(),
                             );
@@ -157,13 +168,13 @@ class _PostComponentState extends State<PostComponent> {
                           child: Icon(
                             Icons.more_horiz,
                             size: Sizes.size18,
-                            color: Colors.grey.shade600,
+                            color: AppColors.tertiaryLabel(context),
                           ),
                         ),
                       ],
                     ),
                     Gaps.v4,
-                    Text(widget.text, style: AppTextStyles.commonText),
+                    Text(widget.text, style: AppTextStyles.commonText(context)),
                     if (widget.imageUrls.isNotEmpty) ...[
                       Gaps.v12,
                       _MediaGallery(urls: widget.imageUrls),
@@ -177,7 +188,7 @@ class _PostComponentState extends State<PostComponent> {
                               : Icons.favorite_border,
                           onTap: () => setState(() => isLiked = !isLiked),
                           isSelected: isLiked,
-                          selectedColor: Colors.pink,
+                          selectedColor: Colors.red,
                         ),
                         Gaps.h5,
                         _ActionIcon(
@@ -185,7 +196,7 @@ class _PostComponentState extends State<PostComponent> {
                           onTap: () =>
                               setState(() => isCommented = !isCommented),
                           isSelected: isCommented,
-                          selectedColor: Colors.amber,
+                          selectedColor: Colors.orange,
                         ),
                         Gaps.h5,
                         _ActionIcon(
@@ -199,14 +210,13 @@ class _PostComponentState extends State<PostComponent> {
                           icon: Icons.send_outlined,
                           onTap: () => setState(() => isShared = !isShared),
                           isSelected: isShared,
-                          selectedColor: Colors.blue,
                         ),
                       ],
                     ),
                     Gaps.v12,
                     Text(
                       '${widget.replies} replies · ${widget.likes} likes',
-                      style: AppTextStyles.system,
+                      style: AppTextStyles.system(context),
                     ),
                   ],
                 ),
@@ -224,30 +234,29 @@ class _ActionIcon extends StatelessWidget {
     required this.icon,
     required this.onTap,
     this.isSelected = false,
-    this.selectedColor = Colors.blue,
+    this.selectedColor,
   });
 
   final IconData icon;
   final VoidCallback onTap;
   final bool isSelected;
-  final Color selectedColor;
+  final Color? selectedColor;
 
   @override
   Widget build(BuildContext context) {
+    final color = selectedColor ?? AppColors.accent(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(Sizes.size8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(Sizes.size20),
-          color: isSelected
-              ? selectedColor.withOpacity(0.1)
-              : Colors.transparent,
+          color: isSelected ? color.withOpacity(0.1) : Colors.transparent,
         ),
         child: Icon(
           icon,
           size: Sizes.size20,
-          color: isSelected ? selectedColor : Colors.grey.shade700,
+          color: isSelected ? color : AppColors.secondaryLabel(context),
         ),
       ),
     );
@@ -277,10 +286,13 @@ class _MiniAvatarStack extends StatelessWidget {
                 height: Sizes.size24,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: Sizes.size2),
+                  border: Border.all(
+                    color: AppColors.systemBackground(context),
+                    width: Sizes.size2,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: AppColors.label(context).withOpacity(0.1),
                       blurRadius: Sizes.size4,
                       offset: const Offset(0, Sizes.size1),
                     ),
@@ -291,19 +303,11 @@ class _MiniAvatarStack extends StatelessWidget {
                     imageUrl: urls[i],
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
-                      color: Colors.grey.shade200,
+                      color: AppColors.secondarySystemBackground(context),
                       child: const Center(
                         child: CircularProgressIndicator(
                           strokeWidth: Sizes.size1,
                         ),
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      color: Colors.grey.shade300,
-                      child: Icon(
-                        Icons.person,
-                        size: Sizes.size12,
-                        color: Colors.grey.shade600,
                       ),
                     ),
                   ),
@@ -379,11 +383,11 @@ class _MediaGallery extends StatelessWidget {
       imageUrl: imageUrl,
       fit: BoxFit.cover,
       placeholder: (context, url) => Container(
-        color: Colors.grey.shade200,
+        color: AppColors.secondarySystemBackground(context),
         child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
       ),
       errorWidget: (context, url, error) => Container(
-        color: Colors.grey.shade200,
+        color: AppColors.secondarySystemBackground(context),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -391,14 +395,14 @@ class _MediaGallery extends StatelessWidget {
               Icon(
                 Icons.broken_image_outlined,
                 size: Sizes.size32,
-                color: Colors.grey.shade400,
+                color: AppColors.quaternaryLabel(context),
               ),
               Gaps.v4,
               Text(
                 '이미지 로드 실패',
                 style: TextStyle(
                   fontSize: Sizes.size12,
-                  color: Colors.grey.shade500,
+                  color: AppColors.tertiaryLabel(context),
                 ),
               ),
             ],

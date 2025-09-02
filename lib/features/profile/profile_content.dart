@@ -4,6 +4,7 @@ import 'profile_model.dart';
 import '../../constants/sizes.dart';
 import '../../constants/gaps.dart';
 import '../../constants/text_style.dart';
+import '../../constants/app_colors.dart';
 
 class AvatarNetwork extends StatelessWidget {
   const AvatarNetwork({super.key, required this.size, this.url});
@@ -20,7 +21,7 @@ class AvatarNetwork extends StatelessWidget {
         child: ClipOval(
           child: Container(
             color: const Color(0xFFE3F2FD),
-            child: Icon(Icons.person, color: Colors.white, size: size * 0.6),
+            child: Icon(Icons.person, color: AppColors.systemBackground(context), size: size * 0.6),
           ),
         ),
       );
@@ -34,14 +35,14 @@ class AvatarNetwork extends StatelessWidget {
           imageUrl: u,
           fit: BoxFit.cover,
           placeholder: (context, url) => Container(
-            color: Colors.grey.shade200,
+            color: AppColors.secondarySystemBackground(context),
             child: const Center(
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
           ),
           errorWidget: (context, url, error) => Container(
             color: const Color(0xFFE3F2FD),
-            child: Icon(Icons.person, color: Colors.white, size: size * 0.6),
+            child: Icon(Icons.person, color: AppColors.systemBackground(context), size: size * 0.6),
           ),
         ),
       ),
@@ -67,12 +68,12 @@ class ProfileHeader extends StatelessWidget {
                 // 유저네임
                 Text(
                   profile.username,
-                  style: AppTextStyles.username.copyWith(fontSize: 20),
+                  style: AppTextStyles.username(context).copyWith(fontSize: 20),
                 ),
                 // 아이디
                 Row(
                   children: [
-                    Text(profile.userId, style: AppTextStyles.commonText),
+                    Text(profile.userId, style: AppTextStyles.commonText(context)),
                     Gaps.h8,
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -80,13 +81,13 @@ class ProfileHeader extends StatelessWidget {
                         vertical: Sizes.size6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
+                        color: AppColors.secondarySystemBackground(context),
                         borderRadius: BorderRadius.circular(Sizes.size16),
                       ),
                       child: Text(
                         'threads.net',
-                        style: AppTextStyles.system.copyWith(
-                          color: Colors.grey.shade600,
+                        style: AppTextStyles.system(context).copyWith(
+                          color: AppColors.tertiaryLabel(context),
                         ),
                       ),
                     ),
@@ -94,7 +95,7 @@ class ProfileHeader extends StatelessWidget {
                 ),
                 Gaps.v8,
                 // 소개글
-                Text(profile.bio, style: AppTextStyles.commonText),
+                Text(profile.bio, style: AppTextStyles.commonText(context)),
                 Gaps.v10,
                 Row(
                   children: [
@@ -126,7 +127,7 @@ class ProfileHeader extends StatelessWidget {
                     SizedBox(width: 8),
                     Text(
                       '2 followers',
-                      style: AppTextStyles.system.copyWith(fontSize: 14),
+                      style: AppTextStyles.system(context).copyWith(fontSize: 14),
                     ),
                   ],
                 ),
@@ -183,7 +184,7 @@ class _ActionButton extends StatelessWidget {
     return Container(
       height: Sizes.size40,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300, width: Sizes.size1),
+        border: Border.all(color: AppColors.separator(context), width: Sizes.size1),
         borderRadius: BorderRadius.circular(Sizes.size10),
       ),
       child: TextButton(
@@ -192,7 +193,7 @@ class _ActionButton extends StatelessWidget {
           padding: EdgeInsets.zero,
           minimumSize: Size.zero,
         ),
-        child: Text(text, style: AppTextStyles.followingButton),
+        child: Text(text, style: AppTextStyles.followingButton(context)),
       ),
     );
   }
@@ -217,7 +218,7 @@ class ProfileTabBarDelegate extends SliverPersistentHeaderDelegate {
     bool overlapsContent,
   ) {
     return Material(
-      color: Colors.white,
+      color: AppColors.systemBackground(context),
       child: SizedBox(
         width: double.infinity,
         height: 48,
@@ -242,7 +243,7 @@ class ProfileTabBarDelegate extends SliverPersistentHeaderDelegate {
                         border: Border(
                           bottom: BorderSide(
                             color: isSelected
-                                ? Colors.black
+                                ? AppColors.label(context)
                                 : Colors.transparent,
                             width: 1,
                           ),
@@ -252,9 +253,9 @@ class ProfileTabBarDelegate extends SliverPersistentHeaderDelegate {
                       child: Text(
                         tabs[i],
                         style: isSelected
-                            ? AppTextStyles.username
-                            : AppTextStyles.commonText.copyWith(
-                                color: Colors.grey.shade600,
+                            ? AppTextStyles.username(context)
+                            : AppTextStyles.commonText(context).copyWith(
+                                color: AppColors.tertiaryLabel(context),
                               ),
                       ),
                     ),
@@ -269,5 +270,5 @@ class ProfileTabBarDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  bool shouldRebuild(covariant ProfileTabBarDelegate old) => false;
+  bool shouldRebuild(covariant ProfileTabBarDelegate old) => true;
 }
