@@ -22,7 +22,7 @@ dependencies:
   permission_handler: ^12.0.1   
   image: ^4.1.3      
   camera: ^0.11.2
-  go_router: ^16.2.0
+  go_router: ^16.2.1
   video_player: ^2.10.0
 
 dev_dependencies:

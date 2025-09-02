@@ -6,6 +6,7 @@ import '../../widgets/post_components.dart';
 import '../../constants/app_colors.dart';
 
 class ProfileScreen extends StatefulWidget {
+    static const routeName = '/profile';
   const ProfileScreen({super.key});
 
   @override
@@ -29,18 +30,6 @@ class _ProfileScreenState extends State<ProfileScreen>
     });
   }
 
-  void _setTabs(List<String> next) {
-    setState(() {
-      final newIndex = _tabController.index.clamp(0, next.length - 1);
-      _tabController.dispose();
-      _tabController = TabController(
-        length: next.length,
-        vsync: this,
-        initialIndex: newIndex,
-      );
-      _tabs = next;
-    });
-  }
 
   @override
   void dispose() {
@@ -48,13 +37,6 @@ class _ProfileScreenState extends State<ProfileScreen>
     super.dispose();
   }
 
-  List<ProfilePostModel> _getCurrentTabData() {
-    if (_tabController.index == 0) {
-      return ProfileData.threadsData;
-    } else {
-      return ProfileData.repliesData;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

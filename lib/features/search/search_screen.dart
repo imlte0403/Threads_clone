@@ -133,7 +133,7 @@ class _UserTile extends StatelessWidget {
           title: _UserInfo(user: user),
           trailing: FollowButton(
             onPressed: () {
-              print('${user.username} 팔로우 상태 변경');
+              debugPrint('${user.username} 팔로우 상태 변경');
             },
           ),
         ),

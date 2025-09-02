@@ -154,7 +154,7 @@ class ProfileActionButtons extends StatelessWidget {
             child: _ActionButton(
               text: 'Edit profile',
               onPressed: () {
-                print('Edit profile pressed');
+                debugPrint('Edit profile pressed');
               },
             ),
           ),
@@ -163,7 +163,7 @@ class ProfileActionButtons extends StatelessWidget {
             child: _ActionButton(
               text: 'Share profile',
               onPressed: () {
-                print('Share profile pressed');
+                debugPrint('Share profile pressed');
               },
             ),
           ),

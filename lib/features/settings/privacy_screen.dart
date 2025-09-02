@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../constants/sizes.dart';
 import '../../constants/gaps.dart';
 import '../../constants/text_style.dart';
@@ -23,7 +24,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
         elevation: 0,
         leadingWidth: 100,
         leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
+          onTap: () => context.go('/settings'),
           child: Container(
             padding: const EdgeInsets.only(left: 16),
             child: Row(

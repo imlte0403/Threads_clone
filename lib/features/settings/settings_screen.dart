@@ -1,12 +1,13 @@
 // settings_screen.dart
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:thread_clone/constants/gaps.dart';
 import '../../constants/sizes.dart';
 import '../../constants/text_style.dart';
-import '../../constants/app_colors.dart';
-import 'privacy_screen.dart'; 
+import '../../constants/app_colors.dart'; 
 
 class SettingsScreen extends StatelessWidget {
+  static const routeName = '/settings';
   const SettingsScreen({super.key});
 
   @override
@@ -21,7 +22,7 @@ class SettingsScreen extends StatelessWidget {
         backgroundColor: AppColors.systemBackground(context),
         leadingWidth: 100,
         leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
+          onTap: () => context.go('/profile'),
           child: Container(
             padding: const EdgeInsets.only(left: 16),
             child: Row(
@@ -65,10 +66,7 @@ class SettingsScreen extends StatelessWidget {
             leading: Icon(Icons.lock_outline, color: AppColors.label(context)),
             title: Text("Privacy", style: AppTextStyles.settings(context)),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const PrivacyScreen()),
-              );
+              context.go('/settings/privacy');
             },
           ),
           ListTile(

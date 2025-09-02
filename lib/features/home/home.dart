@@ -8,6 +8,7 @@ import '../../constants/gaps.dart';
 import '../../constants/app_colors.dart';
 
 class HomeScreen extends StatefulWidget {
+  static const routeName = '/';
   const HomeScreen({super.key});
 
   @override

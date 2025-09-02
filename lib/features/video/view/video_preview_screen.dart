@@ -87,14 +87,14 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
 
         _compressedImageFile = tempFile;
 
-        print('원본 크기: ${bytes.length} bytes');
-        print('압축 후 크기: ${compressedBytes.length} bytes');
-        print(
+        debugPrint('원본 크기: ${bytes.length} bytes');
+        debugPrint('압축 후 크기: ${compressedBytes.length} bytes');
+        debugPrint(
           '압축률: ${((1 - compressedBytes.length / bytes.length) * 100).toStringAsFixed(1)}%',
         );
       }
     } catch (e) {
-      print('이미지 압축 오류: $e');
+      debugPrint('이미지 압축 오류: $e');
 
       _compressedImageFile = File(widget.media.path);
     }

@@ -89,17 +89,19 @@ class MediaPicker {
           ),
           CupertinoDialogAction(
             onPressed: () async {
+              final BuildContext dialogContext = context;
               final result = (source == ImageSource.gallery)
-                  ? await _pickMultiImage(context)
-                  : await _pickSingleMedia(context, source: source, isVideo: false);
-              if (context.mounted) Navigator.pop(context, result);
+                  ? await _pickMultiImage(dialogContext)
+                  : await _pickSingleMedia(dialogContext, source: source, isVideo: false);
+              if (dialogContext.mounted) Navigator.pop(dialogContext, result);
             },
             child: const Text('사진'),
           ),
           CupertinoDialogAction(
             onPressed: () async {
-              final result = await _pickSingleMedia(context, source: source, isVideo: true);
-              if (context.mounted) Navigator.pop(context, result);
+              final BuildContext dialogContext = context;
+              final result = await _pickSingleMedia(dialogContext, source: source, isVideo: true);
+              if (dialogContext.mounted) Navigator.pop(dialogContext, result);
             },
             child: const Text('동영상'),
           ),
@@ -141,7 +143,7 @@ class MediaPicker {
         );
       }
     } catch (e) {
-      print('Single Media Pick Error: $e');
+      debugPrint('Single Media Pick Error: $e');
     }
     return null;
   }
@@ -176,13 +178,8 @@ class MediaPicker {
         };
       }
     } catch (e) {
-      print('Multi Image Pick Error: $e');
+      debugPrint('Multi Image Pick Error: $e');
     }
     return null;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return const SizedBox.shrink();
   }
 }

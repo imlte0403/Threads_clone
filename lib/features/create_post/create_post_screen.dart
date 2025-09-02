@@ -307,7 +307,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           ),
         );
       }
-      print('게시글 저장 오류: $e');
+      debugPrint('게시글 저장 오류: $e');
     } finally {
       if (mounted) {
         setState(() {

@@ -8,6 +8,7 @@ import '../../constants/app_colors.dart';
 import '../../widgets/follow_btn.dart';
 
 class ActivityScreen extends StatefulWidget {
+  static const routeName = '/activity';
   const ActivityScreen({super.key});
 
   @override
@@ -118,9 +119,13 @@ class _CustomTabBar extends StatelessWidget {
                 width: Sizes.size96,
                 height: Sizes.size40,
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.label(context) : AppColors.systemBackground(context),
+                  color: isSelected
+                      ? AppColors.label(context)
+                      : AppColors.systemBackground(context),
                   border: Border.all(
-                    color: isSelected ? AppColors.label(context) : AppColors.separator(context),
+                    color: isSelected
+                        ? AppColors.label(context)
+                        : AppColors.separator(context),
                     width: Sizes.size1,
                   ),
                   borderRadius: BorderRadius.circular(Sizes.size10),
@@ -195,7 +200,7 @@ class _ActivityTile extends StatelessWidget {
           height: Sizes.size1,
           thickness: Sizes.size1,
           color: AppColors.separator(context),
-          indent: Sizes.size60, 
+          indent: Sizes.size60,
         ),
       ],
     );
@@ -242,7 +247,11 @@ class _ProfileImage extends StatelessWidget {
           ),
           errorWidget: (context, url, error) => Container(
             color: const Color(0xFFE3F2FD),
-            child: Icon(Icons.person, color: AppColors.systemBackground(context), size: size * 0.5),
+            child: Icon(
+              Icons.person,
+              color: AppColors.systemBackground(context),
+              size: size * 0.5,
+            ),
           ),
         ),
       ),
@@ -266,7 +275,10 @@ class _ActivityIcon extends StatelessWidget {
         decoration: BoxDecoration(
           color: ActivityData.activityColors[type],
           shape: BoxShape.circle,
-          border: Border.all(color: AppColors.systemBackground(context), width: Sizes.size2),
+          border: Border.all(
+            color: AppColors.systemBackground(context),
+            width: Sizes.size2,
+          ),
         ),
         child: Icon(
           ActivityData.activityIcons[type],
@@ -343,7 +355,7 @@ class _ActivityTrailing extends StatelessWidget {
           FollowButton(
             initialFollowState: true,
             onPressed: () {
-              print('$username 언팔로우');
+              debugPrint('$username 언팔로우');
             },
           ),
         ],
