@@ -1,10 +1,12 @@
 // settings_screen.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:thread_clone/constants/gaps.dart';
 import '../../constants/sizes.dart';
 import '../../constants/text_style.dart';
-import '../../constants/app_colors.dart'; 
+import '../../constants/app_colors.dart';
+import 'settings_viewmodel.dart'; 
 
 class SettingsScreen extends StatelessWidget {
   static const routeName = '/settings';
@@ -49,6 +51,17 @@ class SettingsScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
+          SwitchListTile(
+            secondary: Icon(Icons.dark_mode, color: AppColors.label(context)),
+            title: Text(
+              "Dark mode",
+              style: AppTextStyles.settings(context),
+            ),
+            value: context.watch<SettingsViewModel>().darkMode,
+            onChanged: (value) {
+              context.read<SettingsViewModel>().setDarkMode(value);
+            },
+          ),
           ListTile(
             leading: Icon(Icons.person_add_alt, color: AppColors.label(context)),
             title: Text(
