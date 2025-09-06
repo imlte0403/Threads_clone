@@ -12,7 +12,7 @@ void main() async {
   GoRouter.optionURLReflectsImperativeAPIs = true;
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  runApp(
+  runApp(   
     ChangeNotifierProvider(
       create: (context) => SettingsViewModel(),
       child: const MyApp(),

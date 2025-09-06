@@ -17,7 +17,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  List<String> _tabs = ['Threads', 'Replies'];
+  final List<String> _tabs = ['Threads', 'Replies'];
 
   @override
   void initState() {

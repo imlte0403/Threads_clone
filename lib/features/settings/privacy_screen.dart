@@ -64,7 +64,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
             value: _isPrivate,
             onChanged: (v) => setState(() => _isPrivate = v),
             title: Text("Private profile", style: AppTextStyles.settings(context)),
-            activeColor: AppColors.systemBackground(context),
+            activeThumbColor: AppColors.systemBackground(context),
             activeTrackColor: AppColors.label(context),
             inactiveThumbColor: AppColors.systemBackground(context),
             inactiveTrackColor: AppColors.quaternaryLabel(context),

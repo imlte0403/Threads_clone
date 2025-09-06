@@ -174,7 +174,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                 Icons.error_outline,
                                 color: Theme.of(
                                   context,
-                                ).colorScheme.onSurface.withOpacity(0.6),
+                                ).colorScheme.onSurface.withValues(alpha: 0.6),
                                 size: 40,
                               ),
                             ),
@@ -421,7 +421,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                   decoration: BoxDecoration(
                                     color: Theme.of(
                                       context,
-                                    ).primaryColor.withOpacity(0.1),
+                                    ).primaryColor.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(

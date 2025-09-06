@@ -6,7 +6,7 @@ import 'package:thread_clone/constants/gaps.dart';
 import '../../constants/sizes.dart';
 import '../../constants/text_style.dart';
 import '../../constants/app_colors.dart';
-import 'settings_viewmodel.dart'; 
+import 'settings_viewmodel.dart';
 
 class SettingsScreen extends StatelessWidget {
   static const routeName = '/settings';
@@ -18,7 +18,9 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           "Settings",
-          style: AppTextStyles.screenTitle(context).copyWith(fontSize: Sizes.size20),
+          style: AppTextStyles.screenTitle(
+            context,
+          ).copyWith(fontSize: Sizes.size20),
         ),
         centerTitle: true,
         backgroundColor: AppColors.systemBackground(context),
@@ -51,19 +53,29 @@ class SettingsScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          SwitchListTile(
-            secondary: Icon(Icons.dark_mode, color: AppColors.label(context)),
-            title: Text(
-              "Dark mode",
-              style: AppTextStyles.settings(context),
-            ),
-            value: context.watch<SettingsViewModel>().darkMode,
-            onChanged: (value) {
-              context.read<SettingsViewModel>().setDarkMode(value);
+          Consumer<SettingsViewModel>(
+            builder: (context, settingsViewModel, child) {
+              return SwitchListTile(
+                secondary: Icon(
+                  Icons.dark_mode,
+                  color: AppColors.label(context),
+                ),
+                title: Text(
+                  "Dark mode",
+                  style: AppTextStyles.settings(context),
+                ),
+                value: settingsViewModel.darkMode,
+                onChanged: (value) {
+                  settingsViewModel.setDarkMode(value);
+                },
+              );
             },
           ),
           ListTile(
-            leading: Icon(Icons.person_add_alt, color: AppColors.label(context)),
+            leading: Icon(
+              Icons.person_add_alt,
+              color: AppColors.label(context),
+            ),
             title: Text(
               "Follow and invite friends",
               style: AppTextStyles.settings(context),
@@ -71,8 +83,14 @@ class SettingsScreen extends StatelessWidget {
             onTap: () {},
           ),
           ListTile(
-            leading: Icon(Icons.notifications_none, color: AppColors.label(context)),
-            title: Text("Notifications", style: AppTextStyles.settings(context)),
+            leading: Icon(
+              Icons.notifications_none,
+              color: AppColors.label(context),
+            ),
+            title: Text(
+              "Notifications",
+              style: AppTextStyles.settings(context),
+            ),
             onTap: () {},
           ),
           ListTile(

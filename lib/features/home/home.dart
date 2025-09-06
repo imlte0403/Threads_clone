@@ -17,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _scroll = ScrollController();
-  bool _showTop = false;
+  final ValueNotifier<bool> _showTop = ValueNotifier<bool>(false);
 
   static const double _showThreshold = 200;
   static const double _hideThreshold = 120;
@@ -29,10 +29,10 @@ class _HomeScreenState extends State<HomeScreen> {
     _scroll.addListener(() {
       final y = _scroll.offset;
 
-      if (!_showTop && y > _showThreshold) {
-        setState(() => _showTop = true);
-      } else if (_showTop && y < _hideThreshold) {
-        setState(() => _showTop = false);
+      if (!_showTop.value && y > _showThreshold) {
+        _showTop.value = true;
+      } else if (_showTop.value && y < _hideThreshold) {
+        _showTop.value = false;
       }
     });
   }
@@ -40,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _scroll.dispose();
+    _showTop.dispose();
     super.dispose();
   }
 
@@ -102,7 +103,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               Gaps.h16,
                               Text(
                                 '불러오기 오류: ${snap.error}',
-                                style: TextStyle(color: AppColors.tertiaryLabel(context)),
+                                style: TextStyle(
+                                  color: AppColors.tertiaryLabel(context),
+                                ),
                                 textAlign: TextAlign.center,
                               ),
                             ],
@@ -190,61 +193,72 @@ class _HomeScreenState extends State<HomeScreen> {
             child: SafeArea(
               bottom: false,
               child: Center(
-                child: TweenAnimationBuilder<double>(
-                  duration: const Duration(milliseconds: 300),
-                  tween: Tween(begin: 0.0, end: _showTop ? 1.0 : 0.0),
-                  builder: (context, value, child) {
-                    return Transform.translate(
-                      offset: Offset(0, -50 * (1 - value)),
-                      child: Opacity(
-                        opacity: value,
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 12),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.label(context).withOpacity(0.1),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: _showTop,
+                  builder: (context, showTop, child) {
+                    return TweenAnimationBuilder<double>(
+                      duration: const Duration(milliseconds: 300),
+                      tween: Tween(begin: 0.0, end: showTop ? 1.0 : 0.0),
+                      builder: (context, value, child) {
+                        return Transform.translate(
+                          offset: Offset(0, -50 * (1 - value)),
+                          child: Opacity(
+                            opacity: value,
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(25),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.label(
+                                      context,
+                                    ).withValues(alpha: 0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: Material(
-                            color: AppColors.systemBackground(context),
-                            borderRadius: BorderRadius.circular(25),
-                            child: InkWell(
-                              onTap: _scrollToTop,
-                              borderRadius: BorderRadius.circular(25),
-                              child: Container(
-                                height: 45,
-                                width: 140,
-                                alignment: Alignment.center,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.keyboard_arrow_up_rounded,
-                                      color: AppColors.secondaryLabel(context),
-                                      size: 20,
+                              child: Material(
+                                color: AppColors.systemBackground(context),
+                                borderRadius: BorderRadius.circular(25),
+                                child: InkWell(
+                                  onTap: _scrollToTop,
+                                  borderRadius: BorderRadius.circular(25),
+                                  child: Container(
+                                    height: 45,
+                                    width: 140,
+                                    alignment: Alignment.center,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.keyboard_arrow_up_rounded,
+                                          color: AppColors.secondaryLabel(
+                                            context,
+                                          ),
+                                          size: 20,
+                                        ),
+                                        Gaps.v4,
+                                        Text(
+                                          'TOP',
+                                          style: TextStyle(
+                                            color: AppColors.secondaryLabel(
+                                              context,
+                                            ),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    Gaps.v4,
-                                    Text(
-                                      'TOP',
-                                      style: TextStyle(
-                                        color: AppColors.secondaryLabel(context),
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     );
                   },
                 ),
