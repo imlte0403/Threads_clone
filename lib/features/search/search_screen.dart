@@ -133,7 +133,7 @@ class _UserTile extends StatelessWidget {
           title: _UserInfo(user: user),
           trailing: FollowButton(
             onPressed: () {
-              debugPrint('${user.username} 팔로우 상태 변경');
+              // 팔로우 상태 토글 로직 연결 예정
             },
           ),
         ),
@@ -170,7 +170,11 @@ class _UserAvatar extends StatelessWidget {
           ),
           errorWidget: (context, url, error) => Container(
             color: const Color(0xFFE3F2FD),
-            child: Icon(Icons.person, color: AppColors.systemBackground(context), size: Sizes.size28),
+            child: Icon(
+              Icons.person,
+              color: AppColors.systemBackground(context),
+              size: Sizes.size28,
+            ),
           ),
         ),
       ),
@@ -192,7 +196,10 @@ class _UserInfo extends StatelessWidget {
         Gaps.v2,
         Text(user.displayName, style: AppTextStyles.userIntroduction(context)),
         Gaps.v6,
-        Text('${user.followers} followers', style: AppTextStyles.commonText(context)),
+        Text(
+          '${user.followers} followers',
+          style: AppTextStyles.commonText(context),
+        ),
       ],
     );
   }

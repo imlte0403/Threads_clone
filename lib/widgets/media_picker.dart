@@ -33,7 +33,7 @@ class MediaPicker {
                 title: '카메라',
                 content: '사진을 촬영하시겠어요, 동영상을 녹화하시겠어요?',
               );
-              if (context.mounted) Navigator.pop(context, result);
+              if (context.mounted) Navigator.pop(context, result ?? []);
             },
             child: const Text('카메라로 촬영'),
           ),
@@ -45,7 +45,7 @@ class MediaPicker {
                 title: '갤러리에서 선택',
                 content: '사진 또는 동영상을 선택하세요',
               );
-              if (context.mounted) Navigator.pop(context, result);
+              if (context.mounted) Navigator.pop(context, result ?? []);
             },
             child: const Text('갤러리에서 선택'),
           ),
@@ -64,10 +64,11 @@ class MediaPicker {
   ) async {
     // Android implementation remains the same
     return await showModalBottomSheet<Map<String, dynamic>>(
-        context: context,
-        builder: (context) {
-          return Container(); // Placeholder for brevity
-        });
+      context: context,
+      builder: (context) {
+        return Container(); // Placeholder for brevity
+      },
+    );
   }
 
   // --- Private Helper Methods ---
@@ -92,16 +93,26 @@ class MediaPicker {
               final BuildContext dialogContext = context;
               final result = (source == ImageSource.gallery)
                   ? await _pickMultiImage(dialogContext)
-                  : await _pickSingleMedia(dialogContext, source: source, isVideo: false);
-              if (dialogContext.mounted) Navigator.pop(dialogContext, result);
+                  : await _pickSingleMedia(
+                      dialogContext,
+                      source: source,
+                      isVideo: false,
+                    );
+              if (dialogContext.mounted)
+                Navigator.pop(dialogContext, result ?? []);
             },
             child: const Text('사진'),
           ),
           CupertinoDialogAction(
             onPressed: () async {
               final BuildContext dialogContext = context;
-              final result = await _pickSingleMedia(dialogContext, source: source, isVideo: true);
-              if (dialogContext.mounted) Navigator.pop(dialogContext, result);
+              final result = await _pickSingleMedia(
+                dialogContext,
+                source: source,
+                isVideo: true,
+              );
+              if (dialogContext.mounted)
+                Navigator.pop(dialogContext, result ?? []);
             },
             child: const Text('동영상'),
           ),
@@ -142,14 +153,13 @@ class MediaPicker {
           ),
         );
       }
-    } catch (e) {
-      debugPrint('Single Media Pick Error: $e');
-    }
+    } catch (e) {}
     return null;
   }
 
   static Future<Map<String, dynamic>?> _pickMultiImage(
-      BuildContext context) async {
+    BuildContext context,
+  ) async {
     try {
       final ImagePicker picker = ImagePicker();
       final List<XFile> images = await picker.pickMultiImage(
@@ -177,9 +187,7 @@ class MediaPicker {
           'isMultiple': true,
         };
       }
-    } catch (e) {
-      debugPrint('Multi Image Pick Error: $e');
-    }
+    } catch (e) {}
     return null;
   }
 }

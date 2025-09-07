@@ -86,16 +86,8 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
         await tempFile.writeAsBytes(compressedBytes);
 
         _compressedImageFile = tempFile;
-
-        debugPrint('원본 크기: ${bytes.length} bytes');
-        debugPrint('압축 후 크기: ${compressedBytes.length} bytes');
-        debugPrint(
-          '압축률: ${((1 - compressedBytes.length / bytes.length) * 100).toStringAsFixed(1)}%',
-        );
       }
     } catch (e) {
-      debugPrint('이미지 압축 오류: $e');
-
       _compressedImageFile = File(widget.media.path);
     }
 
@@ -107,7 +99,11 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
         ? File(widget.media.path)
         : _compressedImageFile ?? File(widget.media.path);
 
-    Navigator.pop(context, {'file': resultFile, 'isVideo': widget.isVideo});
+    if (resultFile.existsSync()) {
+      Navigator.pop(context, {'file': resultFile, 'isVideo': widget.isVideo});
+    } else {
+      Navigator.pop(context, {});
+    }
   }
 
   void _retake() {
@@ -127,14 +123,18 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
         ),
         middle: Text(
           widget.isVideo ? '동영상 미리보기' : '사진 미리보기',
-          style: const TextStyle(
-            color: Colors.white,
-          ),
+          style: const TextStyle(color: Colors.white),
         ),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: _useMedia,
-          child: const Text("사용하기", style: TextStyle(color: CupertinoColors.activeBlue, fontWeight: FontWeight.bold)),
+          child: const Text(
+            "사용하기",
+            style: TextStyle(
+              color: CupertinoColors.activeBlue,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
       child: _isProcessing
@@ -146,7 +146,11 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                   Gaps.v20,
                   Text(
                     "처리 중...",
-                    style: TextStyle(color: Colors.white, fontSize: 16, decoration: TextDecoration.none),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      decoration: TextDecoration.none,
+                    ),
                   ),
                 ],
               ),
@@ -156,15 +160,17 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                 Center(
                   child: widget.isVideo
                       ? _videoPlayerController?.value.isInitialized == true
-                          ? AspectRatio(
-                              aspectRatio:
-                                  _videoPlayerController!.value.aspectRatio,
-                              child: VideoPlayer(_videoPlayerController!),
-                            )
-                          : const CupertinoActivityIndicator(color: Colors.white)
+                            ? AspectRatio(
+                                aspectRatio:
+                                    _videoPlayerController!.value.aspectRatio,
+                                child: VideoPlayer(_videoPlayerController!),
+                              )
+                            : const CupertinoActivityIndicator(
+                                color: Colors.white,
+                              )
                       : _compressedImageFile != null
-                          ? Image.file(_compressedImageFile!, fit: BoxFit.contain)
-                          : const CupertinoActivityIndicator(color: Colors.white),
+                      ? Image.file(_compressedImageFile!, fit: BoxFit.contain)
+                      : const CupertinoActivityIndicator(color: Colors.white),
                 ),
                 if (widget.isVideo &&
                     _videoPlayerController?.value.isInitialized == true)
@@ -180,7 +186,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                         });
                       },
                       padding: const EdgeInsets.all(Sizes.size12),
-                      color: Colors.black.withOpacity(0.5),
+                      color: Colors.black.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(100),
                       child: Icon(
                         _videoPlayerController!.value.isPlaying

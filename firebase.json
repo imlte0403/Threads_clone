@@ -1,1 +1,21 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"thread-clone-cea4c","appId":"1:687283648250:android:1cab2eccac9b42ae623b43","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"thread-clone-cea4c","appId":"1:687283648250:ios:d4c828785484ddab623b43","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"macos":{"default":{"projectId":"thread-clone-cea4c","appId":"1:687283648250:ios:d4c828785484ddab623b43","uploadDebugSymbols":false,"fileOutput":"macos/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"thread-clone-cea4c","configurations":{"android":"1:687283648250:android:1cab2eccac9b42ae623b43","ios":"1:687283648250:ios:d4c828785484ddab623b43","macos":"1:687283648250:ios:d4c828785484ddab623b43","web":"1:687283648250:web:ec758d20b072ad86623b43","windows":"1:687283648250:web:71d4aada37836f25623b43"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "appId": "실제 사용 중인 Android 앱 ID"
+        }
+      },
+      "ios": {
+        "default": {
+          "appId": "실제 사용 중인 iOS 앱 ID"
+        }
+      },
+      "web": {
+        "default": {
+          "appId": "실제 사용 중인 Web 앱 ID"
+        }
+      }
+    }
+  }
+}

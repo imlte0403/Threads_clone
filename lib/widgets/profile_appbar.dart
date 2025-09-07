@@ -17,12 +17,16 @@ class ProfileAppBar extends StatelessWidget {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(Icons.language, size: Sizes.size28, color: AppColors.label(context)),
+          Icon(
+            Icons.language,
+            size: Sizes.size28,
+            color: AppColors.label(context),
+          ),
 
           Row(
             children: [
               GestureDetector(
-                onTap: () => debugPrint('Instagram icon pressed'),
+                onTap: () {},
                 child: Icon(
                   Icons.camera_alt_outlined,
                   size: Sizes.size28,

@@ -251,7 +251,7 @@ class _ActionIcon extends StatelessWidget {
         padding: const EdgeInsets.all(Sizes.size8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(Sizes.size20),
-          color: isSelected ? color.withOpacity(0.1) : Colors.transparent,
+          color: isSelected ? color.withValues(alpha: 0.1) : Colors.transparent,
         ),
         child: Icon(
           icon,
@@ -292,7 +292,7 @@ class _MiniAvatarStack extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.label(context).withOpacity(0.1),
+                      color: AppColors.label(context).withValues(alpha: 0.1),
                       blurRadius: Sizes.size4,
                       offset: const Offset(0, Sizes.size1),
                     ),

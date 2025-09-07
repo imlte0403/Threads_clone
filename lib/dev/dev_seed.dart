@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:math';
 import '../constants/app_data.dart';
 
@@ -144,5 +143,5 @@ Future<void> seedPosts({int count = 2, int repeat = 1}) async {
     }
   }
 
-  debugPrint('Successfully seeded ${count * repeat} posts with random images!');
+  // 시드 완료
 }
