@@ -1,13 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thread_clone/widgets/post_modalBottomSheet.dart';
 import '../constants/text_style.dart';
 import '../constants/sizes.dart';
 import '../constants/gaps.dart';
 import '../constants/app_colors.dart';
+import '../models/post_model.dart';
 
-class PostComponent extends StatefulWidget {
+class PostComponent extends ConsumerStatefulWidget {
   const PostComponent({
+    super.key,
+    required this.post,
+    this.onLike,
+    this.onUnlike,
+    this.onDelete,
+    this.showInteractions = true,
+  });
+
+  final PostModel post;
+  final VoidCallback? onLike;
+  final VoidCallback? onUnlike;
+  final VoidCallback? onDelete;
+  final bool showInteractions;
+
+  @override
+  ConsumerState<PostComponent> createState() => _PostComponentState();
+}
+
+// Legacy constructor support
+class LegacyPostComponent extends StatefulWidget {
+  const LegacyPostComponent({
     super.key,
     required this.username,
     required this.timeAgo,
@@ -31,62 +54,179 @@ class PostComponent extends StatefulWidget {
   final String? avatarUrl;
 
   @override
-  State<PostComponent> createState() => _PostComponentState();
+  State<LegacyPostComponent> createState() => _LegacyPostComponentState();
 }
 
-class _AvatarNetwork extends StatelessWidget {
-  const _AvatarNetwork({required this.size, this.url});
-  final double size;
-  final String? url;
+class _PostComponentState extends ConsumerState<PostComponent> {
+  bool isLiked = false;
+  bool isCommented = false;
+  bool isReposted = false;
+  bool isShared = false;
 
   @override
   Widget build(BuildContext context) {
-    final u = url?.trim();
-    if (u == null || u.isEmpty) {
-      return SizedBox(
-        width: size,
-        height: size,
-        child: ClipOval(
-          child: Container(
-            color: AppColors.secondarySystemBackground(context),
-            child: Icon(
-              Icons.person,
-              color: AppColors.systemBackground(context),
-              size: size * 0.6,
-            ),
-          ),
+    final post = widget.post;
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: Sizes.size8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Sizes.size16,
+          vertical: Sizes.size12,
         ),
-      );
-    }
-
-    return SizedBox(
-      width: size,
-      height: size,
-      child: ClipOval(
-        child: CachedNetworkImage(
-          imageUrl: u,
-          fit: BoxFit.cover,
-          placeholder: (context, url) => Container(
-            color: AppColors.secondarySystemBackground(context),
-            child: const Center(
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          ),
-          errorWidget: (context, url, error) => Container(
-            color: AppColors.secondarySystemBackground(context),
-            child: Icon(
-              Icons.person,
-              color: AppColors.systemBackground(context),
-              size: size * 0.6,
-            ),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 좌측 섹션
+              Column(
+                children: [
+                  // 프로필 이미지
+                  _AvatarNetwork(
+                    size: Sizes.size36,
+                    url: post.avatarUrl,
+                    isAnonymous: post.isAnonymous,
+                  ),
+                  Gaps.v8,
+                  // 세로선
+                  Expanded(
+                    child: Container(
+                      width: Sizes.size2,
+                      color: AppColors.separator(context),
+                    ),
+                  ),
+                  Gaps.v8,
+                  // 아바타 이미지
+                  _MiniAvatarStack(urls: post.likedByAvatars),
+                ],
+              ),
+              Gaps.h12,
+              Expanded(
+                // 우측 섹션
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Gaps.v4,
+                    // 유저 네임 / 인증 마크 / 시간 / ... 버튼
+                    Row(
+                      children: [
+                        // 유저 네임 (익명 처리)
+                        Text(
+                          post.isAnonymous ? 'anonymous' : post.username,
+                          style: AppTextStyles.username(context).copyWith(
+                            color: post.isAnonymous 
+                                ? AppColors.tertiaryLabel(context)
+                                : AppColors.label(context),
+                          ),
+                        ),
+                        // 인증 마크
+                        if (post.isVerified && !post.isAnonymous) ...[
+                          Gaps.h4,
+                          Icon(
+                            Icons.verified,
+                            size: Sizes.size16,
+                            color: AppColors.accent(context),
+                          ),
+                        ],
+                        const Spacer(),
+                        // 시간
+                        Text(
+                          post.timeAgo,
+                          style: AppTextStyles.system(context),
+                        ),
+                        Gaps.h12,
+                        // ... 버튼
+                        _buildMoreButton(post),
+                      ],
+                    ),
+                    Gaps.v4,
+                    Text(post.text, style: AppTextStyles.commonText(context)),
+                    if (post.hasImages) ...[
+                      Gaps.v12,
+                      _MediaGallery(urls: post.imageUrls),
+                    ],
+                    if (widget.showInteractions) ...[
+                      Gaps.v16,
+                      _buildInteractionRow(),
+                      Gaps.v12,
+                      Text(
+                        '${post.replies} replies · ${post.likes} likes',
+                        style: AppTextStyles.system(context),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
+
+  Widget _buildMoreButton(PostModel post) {
+    return GestureDetector(
+      onTap: () {
+        showModalBottomSheet(
+          backgroundColor: AppColors.systemBackground(context),
+          context: context,
+          builder: (context) => PostModalBottomSheet(
+            canDelete: post.isAnonymous, // 익명 게시물만 삭제 가능
+            onDelete: widget.onDelete,
+          ),
+        );
+      },
+      child: Icon(
+        Icons.more_horiz,
+        size: Sizes.size18,
+        color: AppColors.tertiaryLabel(context),
+      ),
+    );
+  }
+
+  Widget _buildInteractionRow() {
+    return Row(
+      children: [
+        _ActionIcon(
+          icon: isLiked ? Icons.favorite : Icons.favorite_border,
+          onTap: () {
+            setState(() => isLiked = !isLiked);
+            if (isLiked) {
+              widget.onLike?.call();
+            } else {
+              widget.onUnlike?.call();
+            }
+          },
+          isSelected: isLiked,
+          selectedColor: Colors.red,
+        ),
+        Gaps.h5,
+        _ActionIcon(
+          icon: Icons.mode_comment_outlined,
+          onTap: () => setState(() => isCommented = !isCommented),
+          isSelected: isCommented,
+          selectedColor: Colors.orange,
+        ),
+        Gaps.h5,
+        _ActionIcon(
+          icon: Icons.repeat,
+          onTap: () => setState(() => isReposted = !isReposted),
+          isSelected: isReposted,
+          selectedColor: Colors.green,
+        ),
+        Gaps.h5,
+        _ActionIcon(
+          icon: Icons.send_outlined,
+          onTap: () => setState(() => isShared = !isShared),
+          isSelected: isShared,
+        ),
+      ],
+    );
+  }
 }
 
-class _PostComponentState extends State<PostComponent> {
+// Legacy State class
+class _LegacyPostComponentState extends State<LegacyPostComponent> {
   bool isLiked = false;
   bool isCommented = false;
   bool isReposted = false;
@@ -228,6 +368,70 @@ class _PostComponentState extends State<PostComponent> {
     );
   }
 }
+
+class _AvatarNetwork extends StatelessWidget {
+  const _AvatarNetwork({
+    required this.size, 
+    this.url,
+    this.isAnonymous = false,
+  });
+  final double size;
+  final String? url;
+  final bool isAnonymous;
+
+  @override
+  Widget build(BuildContext context) {
+    final u = url?.trim();
+    
+    // 익명 사용자이거나 URL이 없는 경우 익명 아바타 표시
+    if (isAnonymous || u == null || u.isEmpty) {
+      return SizedBox(
+        width: size,
+        height: size,
+        child: ClipOval(
+          child: Container(
+            color: isAnonymous 
+                ? AppColors.tertiaryLabel(context).withOpacity(0.1)
+                : AppColors.secondarySystemBackground(context),
+            child: Icon(
+              isAnonymous ? Icons.person_outline : Icons.person,
+              color: isAnonymous 
+                  ? AppColors.tertiaryLabel(context)
+                  : AppColors.systemBackground(context),
+              size: size * 0.6,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: u,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Container(
+            color: AppColors.secondarySystemBackground(context),
+            child: const Center(
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+          errorWidget: (context, url, error) => Container(
+            color: AppColors.secondarySystemBackground(context),
+            child: Icon(
+              Icons.person,
+              color: AppColors.systemBackground(context),
+              size: size * 0.6,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 
 class _ActionIcon extends StatelessWidget {
   const _ActionIcon({

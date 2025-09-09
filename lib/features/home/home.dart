@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widgets/appbar.dart';
 import '../../widgets/post_components.dart';
-import '../../models/post_model.dart';
 import '../../constants/gaps.dart';
 import '../../constants/app_colors.dart';
+import '../../constants/sizes.dart';
+import 'home_view_model.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   static const routeName = '/';
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   final _scroll = ScrollController();
   bool _showTop = false;
 
@@ -25,10 +26,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _setupScrollListener();
+  }
 
+  void _setupScrollListener() {
     _scroll.addListener(() {
       final y = _scroll.offset;
 
+      // TOP 버튼 표시 로직
       if (!_showTop && y > _showThreshold) {
         setState(() => _showTop = true);
       } else if (_showTop && y < _hideThreshold) {
@@ -51,95 +56,100 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _onPostLike(String postId) {
+    ref.read(homeViewModelProvider.notifier).likePost(postId);
+  }
+
+  void _onPostUnlike(String postId) {
+    ref.read(homeViewModelProvider.notifier).unlikePost(postId);
+  }
+
+  void _onPostDelete(String postId) {
+    ref.read(homeViewModelProvider.notifier).deletePost(postId);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final postsAsync = ref.watch(postsStreamProvider);
+
+    ref.listen(homeViewModelProvider, (previous, current) {
+      if (current.hasError && current.errorMessage != previous?.errorMessage) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(current.errorMessage!),
+            backgroundColor: Colors.red,
+            action: SnackBarAction(
+              label: '확인',
+              textColor: Colors.white,
+              onPressed: () {
+                ref.read(homeViewModelProvider.notifier).clearError();
+              },
+            ),
+          ),
+        );
+      }
+    });
+
     return Scaffold(
+      backgroundColor: AppColors.systemBackground(context),
       body: Stack(
         children: [
           CustomScrollView(
             controller: _scroll,
             physics: const BouncingScrollPhysics(),
             slivers: [
-              // 커스텀 앱 바
               const CustomAppBar(),
-              // firebase 데이터 연동
-              StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                stream: FirebaseFirestore.instance
-                    .collection('posts')
-                    .orderBy('createdAt', descending: true)
-                    .snapshots(),
-                builder: (context, snap) {
-                  if (snap.connectionState == ConnectionState.waiting) {
-                    return SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.all(32),
-                        child: Center(
-                          child: Builder(
-                            builder: (context) => CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                AppColors.label(context),
-                              ),
-                            ),
-                          ),
+              postsAsync.when(
+                loading: () => SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(Sizes.size32),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          AppColors.accent(context),
                         ),
                       ),
-                    );
-                  }
-
-                  if (snap.hasError) {
-                    return SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Center(
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.error_outline,
-                                size: 48,
-                                color: AppColors.quaternaryLabel(context),
-                              ),
-                              Gaps.h16,
-                              Text(
-                                '불러오기 오류: ${snap.error}',
-                                style: TextStyle(
-                                  color: AppColors.tertiaryLabel(context),
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        ),
+                    ),
+                  ),
+                ),
+                error: (error, stackTrace) => SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(Sizes.size32),
+                    child: Center(
+                      child: Text(
+                        '오류가 발생했습니다: $error',
+                        style: const TextStyle(color: Colors.red),
                       ),
-                    );
-                  }
-
-                  final docs = snap.data?.docs ?? [];
-                  if (docs.isEmpty) {
+                    ),
+                  ),
+                ),
+                data: (posts) {
+                  if (posts.isEmpty) {
                     return SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.all(48),
+                        padding: const EdgeInsets.all(Sizes.size48),
                         child: Center(
                           child: Column(
                             children: [
                               Icon(
                                 Icons.article_outlined,
-                                size: 64,
+                                size: Sizes.size64,
                                 color: AppColors.quaternaryLabel(context),
                               ),
-                              Gaps.h16,
+                              Gaps.v16,
                               Text(
                                 '아직 게시글이 없어요',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: Sizes.size18,
                                   color: AppColors.tertiaryLabel(context),
                                 ),
                               ),
-                              Gaps.h8,
+                              Gaps.v8,
                               Text(
                                 '첫 번째 포스트를 작성해보세요!',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: Sizes.size14,
                                   color: AppColors.tertiaryLabel(context),
                                 ),
                               ),
@@ -149,114 +159,97 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                   }
-
                   return SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      final m = docs[index].data();
-                      final createdAt = (m['createdAt'] as Timestamp?)
-                          ?.toDate();
-
-                      return PostComponent(
-                        username: (m['username'] ?? 'user') as String,
-                        timeAgo: formatTimeAgo(createdAt),
-                        text: (m['text'] ?? (m['content'] ?? '')) as String,
-                        replies: (m['replies'] ?? (m['comments'] ?? 0)) as int,
-                        likes: (m['likes'] ?? 0) as int,
-                        isVerified: (m['isVerified'] ?? false) as bool,
-                        imageUrls:
-                            (m['imageUrls'] as List?)
-                                ?.map((e) => e.toString())
-                                .toList() ??
-                            const <String>[],
-                        likedByAvatars:
-                            (m['likedByAvatars'] as List?)
-                                ?.map((e) => e.toString())
-                                .toList() ??
-                            const <String>[],
-                        avatarUrl: (m['avatarUrl'] ?? '') as String,
-                      );
-                    }, childCount: docs.length),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final post = posts[index];
+                        return PostComponent(
+                          post: post,
+                          onLike: post.id != null ? () => _onPostLike(post.id!) : null,
+                          onUnlike: post.id != null ? () => _onPostUnlike(post.id!) : null,
+                          onDelete: post.id != null ? () => _onPostDelete(post.id!) : null,
+                        );
+                      },
+                      childCount: posts.length,
+                    ),
                   );
                 },
               ),
-
               const SliverToBoxAdapter(child: SizedBox(height: 100)),
             ],
           ),
+          _buildTopButton(),
+        ],
+      ),
+    );
+  }
 
-          // TOP 버튼
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 0,
-            child: SafeArea(
-              bottom: false,
-              child: Center(
-                child: TweenAnimationBuilder<double>(
-                  duration: const Duration(milliseconds: 300),
-                  tween: Tween(begin: 0.0, end: _showTop ? 1.0 : 0.0),
-                  builder: (context, value, child) {
-                    return Transform.translate(
-                      offset: Offset(0, -50 * (1 - value)),
-                      child: Opacity(
-                        opacity: value,
+  Widget _buildTopButton() {
+    return Positioned(
+      left: 0,
+      right: 0,
+      top: 0,
+      child: SafeArea(
+        bottom: false,
+        child: Center(
+          child: TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 300),
+            tween: Tween(begin: 0.0, end: _showTop ? 1.0 : 0.0),
+            builder: (context, value, child) {
+              return Transform.translate(
+                offset: Offset(0, -50 * (1 - value)),
+                child: Opacity(
+                  opacity: value,
+                  child: Container(
+                    margin: const EdgeInsets.only(top: Sizes.size12),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(Sizes.size25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.label(context).withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: AppColors.systemBackground(context),
+                      borderRadius: BorderRadius.circular(Sizes.size25),
+                      child: InkWell(
+                        onTap: _scrollToTop,
+                        borderRadius: BorderRadius.circular(Sizes.size25),
                         child: Container(
-                          margin: const EdgeInsets.only(top: 12),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.label(
-                                  context,
-                                ).withValues(alpha: 0.1),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
+                          height: 45,
+                          width: 140,
+                          alignment: Alignment.center,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.keyboard_arrow_up_rounded,
+                                color: AppColors.secondaryLabel(context),
+                                size: Sizes.size20,
+                              ),
+                              Gaps.h4,
+                              Text(
+                                'TOP',
+                                style: TextStyle(
+                                  color: AppColors.secondaryLabel(context),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: Sizes.size14,
+                                ),
                               ),
                             ],
                           ),
-                          child: Material(
-                            color: AppColors.systemBackground(context),
-                            borderRadius: BorderRadius.circular(25),
-                            child: InkWell(
-                              onTap: _scrollToTop,
-                              borderRadius: BorderRadius.circular(25),
-                              child: Container(
-                                height: 45,
-                                width: 140,
-                                alignment: Alignment.center,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.keyboard_arrow_up_rounded,
-                                      color: AppColors.secondaryLabel(context),
-                                      size: 20,
-                                    ),
-                                    Gaps.v4,
-                                    Text(
-                                      'TOP',
-                                      style: TextStyle(
-                                        color: AppColors.secondaryLabel(
-                                          context,
-                                        ),
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
                         ),
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
-        ],
+        ),
       ),
     );
   }

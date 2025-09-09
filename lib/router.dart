@@ -13,7 +13,7 @@ import 'package:thread_clone/features/settings/settings_screen.dart';
 import 'package:thread_clone/features/settings/privacy_screen.dart';
 import 'package:thread_clone/features/auth/login/login_screen.dart';
 import 'package:thread_clone/features/auth/sign_up/signup_screen.dart';
-import 'package:thread_clone/features/auth/repository/auth_repository.dart';
+import 'package:thread_clone/features/write/write_screen.dart';
 import 'package:thread_clone/widgets/navigation_bar.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -23,35 +23,8 @@ final _routerProvider = Provider<GoRouter>((ref) {
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/',
 
-    // 전역 리다이렉션 로직
-    redirect: (BuildContext context, GoRouterState state) {
-      final isLoggedIn = ref.watch(authStateStreamProvider).value ?? false;
-      final isGoingToLogin = state.matchedLocation == '/login';
-      final isGoingToSignUp = state.matchedLocation == '/signup';
-      final isAuthRoute = isGoingToLogin || isGoingToSignUp;
-
-      // 로그인되지 않은 상태
-      if (!isLoggedIn) {
-        // 인증 화면으로 가고 있지 않다면 회원가입 화면으로 리다이렉션 (TA 요구사항)
-        if (!isAuthRoute) {
-          return '/signup';
-        }
-        // 이미 인증 화면으로 가고 있다면 그대로 진행
-        return null;
-      }
-
-      // 로그인된 상태
-      if (isLoggedIn) {
-        // 인증 화면으로 가려고 한다면 홈으로 리다이렉션
-        if (isAuthRoute) {
-          return '/';
-        }
-        // 다른 화면으로 가고 있다면 그대로 진행
-        return null;
-      }
-
-      return null;
-    },
+    // 전역 리다이렉션 로직 제거 (문제 해결)
+    redirect: null,
 
     // 에러 처리
     errorBuilder: (context, state) => const ErrorScreen(),
@@ -103,6 +76,28 @@ final _routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
         ],
+      ),
+
+      // Write 라우트 (로그인한 사용자만 접근 가능)
+      GoRoute(
+        path: '/write',
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const WriteScreen(),
+          transitionDuration: const Duration(milliseconds: 300),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0.0, 1.0),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeInOut,
+              )),
+              child: child,
+            );
+          },
+        ),
       ),
 
       // Settings 라우트 (로그인한 사용자만 접근 가능)

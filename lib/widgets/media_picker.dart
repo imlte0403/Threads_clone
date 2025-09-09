@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,7 +8,14 @@ import '../features/video/view/video_preview_screen.dart';
 class MediaPicker {
   // --- Public Method ---
   static Future<Map<String, dynamic>?> show(BuildContext context) async {
-    if (Platform.isIOS) {
+    // 웹에서는 기본적으로 Android 스타일 사용
+    if (kIsWeb) {
+      return await _showWebPicker(context);
+    }
+    
+    // iOS 테마 감지 (웹이 아닌 경우)
+    final platform = Theme.of(context).platform;
+    if (platform == TargetPlatform.iOS) {
       return await _showIOSActionSheet(context);
     } else {
       return await _showAndroidBottomSheet(context);
@@ -186,7 +193,9 @@ class MediaPicker {
         }
 
         return {
-          'files': limitedImages.map((x) => File(x.path)).toList(),
+          'files': kIsWeb 
+              ? limitedImages  // 웹에서는 XFile 그대로 사용
+              : limitedImages.map((x) => File(x.path)).toList(),
           'isVideo': false,
           'isMultiple': true,
         };
@@ -195,5 +204,38 @@ class MediaPicker {
       print("Error picking multiple images: $e");
     }
     return null;
+  }
+
+  // --- 웹용 미디어 피커 (임시 비활성화) ---
+  static Future<Map<String, dynamic>?> _showWebPicker(BuildContext context) async {
+    return await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              '미디어 추가',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              '웹에서는 현재 미디어 첨부 기능을 지원하지 않습니다.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14),
+            ),
+            const SizedBox(height: 20),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('확인'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -6,7 +6,14 @@ import '../constants/text_style.dart';
 import '../constants/app_colors.dart';
 
 class PostModalBottomSheet extends StatelessWidget {
-  const PostModalBottomSheet({super.key});
+  const PostModalBottomSheet({
+    super.key,
+    this.canDelete = false,
+    this.onDelete,
+  });
+
+  final bool canDelete;
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +60,22 @@ class PostModalBottomSheet extends StatelessWidget {
                     Navigator.pop(context);
                   },
                 ),
+                if (canDelete) ...[
+                  Divider(height: Sizes.size1, color: AppColors.separator(context)),
+                  ListTile(
+                    title: Text(
+                      'Delete',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.red,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      onDelete?.call();
+                    },
+                  ),
+                ],
                 Divider(height: Sizes.size1, color: AppColors.separator(context)),
                 ListTile(
                   title: Text(

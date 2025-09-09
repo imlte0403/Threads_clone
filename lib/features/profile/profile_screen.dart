@@ -66,17 +66,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                 padding: EdgeInsets.zero, 
                 itemCount: ProfileData.threadsData.length,
                 itemBuilder: (_, i) {
-                  final post = ProfileData.threadsData[i];
+                  final profilePost = ProfileData.threadsData[i];
                   return PostComponent(
-                    username: post.username,
-                    timeAgo: post.timeAgo,
-                    text: post.text,
-                    replies: post.replies,
-                    likes: post.likes,
-                    imageUrls: post.imageUrls,
-                    likedByAvatars: post.likedByAvatars,
-                    isVerified: post.isVerified,
-                    avatarUrl: post.avatarUrl,
+                    post: profilePost.toPostModel(),
                   );
                 },
               ),
@@ -84,17 +76,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                 padding: EdgeInsets.zero, 
                 itemCount: ProfileData.repliesData.length,
                 itemBuilder: (_, i) {
-                  final post = ProfileData.repliesData[i];
+                  final profilePost = ProfileData.repliesData[i];
                   return PostComponent(
-                    username: post.username,
-                    timeAgo: post.timeAgo,
-                    text: post.text,
-                    replies: post.replies,
-                    likes: post.likes,
-                    imageUrls: post.imageUrls,
-                    likedByAvatars: post.likedByAvatars,
-                    isVerified: post.isVerified,
-                    avatarUrl: post.avatarUrl,
+                    post: profilePost.toPostModel(),
                   );
                 },
               ),

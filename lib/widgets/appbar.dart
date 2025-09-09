@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../constants/sizes.dart';
 import '../constants/app_colors.dart';
 
@@ -18,6 +19,7 @@ class CustomAppBar extends StatelessWidget {
       elevation: 0,
       centerTitle: true,
       title: Image.asset(logoPath, height: Sizes.size32),
+      actions: const [],
     );
   }
 }

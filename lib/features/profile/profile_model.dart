@@ -1,3 +1,5 @@
+import '../../models/post_model.dart';
+
 class ProfileModel {
   final String username;
   final String displayName;
@@ -40,6 +42,35 @@ class ProfilePostModel {
     this.isVerified = false,
     this.avatarUrl,
   });
+
+  PostModel toPostModel() {
+    return PostModel(
+      username: username,
+      text: text,
+      avatarUrl: avatarUrl,
+      isVerified: isVerified,
+      imageUrls: imageUrls,
+      replies: replies,
+      likes: likes,
+      likedByAvatars: likedByAvatars,
+      createdAt: _parseTimeAgo(timeAgo),
+    );
+  }
+
+  DateTime? _parseTimeAgo(String timeAgo) {
+    final now = DateTime.now();
+    if (timeAgo.endsWith('h')) {
+      final hours = int.tryParse(timeAgo.replaceAll('h', '')) ?? 0;
+      return now.subtract(Duration(hours: hours));
+    } else if (timeAgo.endsWith('m')) {
+      final minutes = int.tryParse(timeAgo.replaceAll('m', '')) ?? 0;
+      return now.subtract(Duration(minutes: minutes));
+    } else if (timeAgo.endsWith('d')) {
+      final days = int.tryParse(timeAgo.replaceAll('d', '')) ?? 0;
+      return now.subtract(Duration(days: days));
+    }
+    return now;
+  }
 }
 
 class ProfileData {
