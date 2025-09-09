@@ -98,8 +98,9 @@ class MediaPicker {
                       source: source,
                       isVideo: false,
                     );
-              if (dialogContext.mounted)
+              if (dialogContext.mounted) {
                 Navigator.pop(dialogContext, result ?? []);
+              }
             },
             child: const Text('사진'),
           ),
@@ -111,8 +112,9 @@ class MediaPicker {
                 source: source,
                 isVideo: true,
               );
-              if (dialogContext.mounted)
+              if (dialogContext.mounted) {
                 Navigator.pop(dialogContext, result ?? []);
+              }
             },
             child: const Text('동영상'),
           ),
@@ -153,7 +155,9 @@ class MediaPicker {
           ),
         );
       }
-    } catch (e) {}
+    } catch (e) {
+      print("Error picking single media: $e");
+    }
     return null;
   }
 
@@ -187,7 +191,9 @@ class MediaPicker {
           'isMultiple': true,
         };
       }
-    } catch (e) {}
+    } catch (e) {
+      print("Error picking multiple images: $e");
+    }
     return null;
   }
 }

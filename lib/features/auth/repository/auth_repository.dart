@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class AuthRepository {
-  static final AuthRepository _instance = AuthRepository._internal();
-  factory AuthRepository() => _instance;
-  AuthRepository._internal();
+part 'auth_repository.g.dart';
 
+class AuthenticationRepository {
   // Firebase Auth 인스턴스
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
@@ -24,7 +23,7 @@ class AuthRepository {
   /// 이메일과 비밀번호로 회원가입
   /// [email] 사용자 이메일
   /// [password] 사용자 비밀번호
-  Future<User?> signUpWithEmailAndPassword({
+  Future<User?> emailSignUp({
     required String email,
     required String password,
   }) async {
@@ -48,7 +47,7 @@ class AuthRepository {
   /// 이메일과 비밀번호로 로그인
   /// [email] 사용자 이메일
   /// [password] 사용자 비밀번호
-  Future<User?> signInWithEmailAndPassword({
+  Future<User?> signIn({
     required String email,
     required String password,
   }) async {
@@ -109,4 +108,15 @@ class AuthRepository {
   bool isValidPassword(String password) {
     return password.length >= 6;
   }
+}
+
+@Riverpod(keepAlive: true)
+AuthenticationRepository authRepository(AuthRepositoryRef ref) {
+  return AuthenticationRepository();
+}
+
+@Riverpod(keepAlive: true)
+Stream<bool> authStateStream(AuthStateStreamRef ref) {
+  final authRepository = ref.watch(authRepositoryProvider);
+  return authRepository.authStateChanges.map((user) => user != null);
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../constants/sizes.dart';
 import '../../../constants/gaps.dart';
 import '../../../constants/app_colors.dart';
@@ -9,22 +9,21 @@ import '../widgets/auth_text_field.dart';
 import '../widgets/auth_button.dart';
 import 'login_view_model.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   static const String routeName = '/login';
-  
+
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
-  
-  final bool _isLoading = false;
+
   String? _emailError;
   String? _passwordError;
 
@@ -45,7 +44,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
     bool isValid = true;
 
-    // 이메일 검증
     if (_emailController.text.isEmpty) {
       setState(() {
         _emailError = '이메일을 입력해주세요';
@@ -58,7 +56,6 @@ class _LoginScreenState extends State<LoginScreen> {
       isValid = false;
     }
 
-    // 비밀번호 검증
     if (_passwordController.text.isEmpty) {
       setState(() {
         _passwordError = '비밀번호를 입력해주세요';
@@ -73,27 +70,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return isValid;
   }
-  // 이메일 검증
+
   bool _isValidEmail(String email) {
-    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+    return RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(email);
   }
 
   Future<void> _handleLogin() async {
     if (!_validateForm()) return;
 
-    final loginViewModel = context.read<LoginViewModel>();
-    
-    final success = await loginViewModel.login(
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-    );
-
-    if (success) {
-      if (mounted) {
-        context.go('/');
-      }
-    } else {
-    }
+    ref.read(loginViewModelProvider.notifier).login(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
   }
 
   void _navigateToSignUp() {
@@ -108,13 +96,22 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
+
+    ref.listen(loginViewModelProvider, (previous, next) {
+      if (next.hasError) {
+        // 에러 처리 (예: 스낵바 표시)
+      }
+      if (!next.isLoading && previous is AsyncLoading && !next.hasError) {
+        context.go('/');
+      }
+    });
+
+    final loginState = ref.watch(loginViewModelProvider);
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: isDarkMode 
-            ? AppColors.darkSystemBackground 
-            : Colors.white,
+        backgroundColor: isDarkMode ? AppColors.darkSystemBackground : Colors.white,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -123,16 +120,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Gaps.v80,
-                  
-                  // 언어 선택
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         'English (US)',
                         style: TextStyle(
-                          color: isDarkMode 
-                              ? AppColors.darkSecondaryLabel 
+                          color: isDarkMode
+                              ? AppColors.darkSecondaryLabel
                               : AppColors.lightSecondaryLabel,
                           fontSize: Sizes.size14,
                         ),
@@ -144,23 +139,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                  
                   Gaps.v60,
-                  
-                  // Threads 로고
                   Center(
                     child: Image.asset(
-                      isDarkMode 
+                      isDarkMode
                           ? 'assets/Threads-Logo-white.png'
                           : 'assets/Threads-Logo.png',
                       width: Sizes.size80,
                       height: Sizes.size80,
                     ),
                   ),
-                  
                   Gaps.v80,
-                  
-                  // 이메일 입력
                   AuthTextField(
                     placeholder: "Mobile number or email",
                     controller: _emailController,
@@ -179,10 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                     },
                   ),
-                  
                   Gaps.v16,
-                  
-                  // 비밀번호 입력
                   AuthTextField(
                     placeholder: "Password",
                     controller: _passwordController,
@@ -199,39 +185,27 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                     },
                   ),
-                  
                   Gaps.v24,
-                  
-                  // 로그인 버튼
                   AuthButton(
                     text: "Log in",
                     onPressed: _handleLogin,
-                    isLoading: _isLoading,
-                    isEnabled: !_isLoading,
+                    isLoading: loginState.isLoading,
+                    isEnabled: !loginState.isLoading,
                   ),
-                  
                   Gaps.v16,
-                  
-                  // 비밀번호 찾기
                   Center(
                     child: TextLinkButton(
                       text: "Forgot password?",
                       onPressed: _navigateToForgotPassword,
                     ),
                   ),
-                  
                   Gaps.v80,
-                  
-                  // 회원가입 버튼
                   SecondaryAuthButton(
                     text: "Create new account",
                     onPressed: _navigateToSignUp,
-                    isEnabled: !_isLoading,
+                    isEnabled: !loginState.isLoading,
                   ),
-                  
                   Gaps.v40,
-                  
-                  // Meta 로고
                   Center(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -239,16 +213,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         Icon(
                           CupertinoIcons.infinite,
                           size: Sizes.size28,
-                          color: isDarkMode 
-                              ? AppColors.darkSecondaryLabel 
+                          color: isDarkMode
+                              ? AppColors.darkSecondaryLabel
                               : AppColors.lightSecondaryLabel,
                         ),
                         Gaps.h8,
                         Text(
                           'Meta',
                           style: TextStyle(
-                            color: isDarkMode 
-                                ? AppColors.darkSecondaryLabel 
+                            color: isDarkMode
+                                ? AppColors.darkSecondaryLabel
                                 : AppColors.lightSecondaryLabel,
                             fontSize: Sizes.size16,
                             fontWeight: FontWeight.w500,
@@ -257,7 +231,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                   ),
-                  
                   Gaps.v20,
                 ],
               ),

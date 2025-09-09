@@ -54,12 +54,12 @@ class AuthButton extends StatelessWidget {
         padding:
             padding ?? const EdgeInsets.symmetric(horizontal: Sizes.size16),
         decoration: BoxDecoration(
-          color: isButtonEnabled ? buttonColor : buttonColor.withOpacity(0.5),
+          color: isButtonEnabled ? buttonColor : buttonColor.withAlpha(128),
           borderRadius: BorderRadius.circular(borderRadius),
           boxShadow: isButtonEnabled
               ? [
                   BoxShadow(
-                    color: buttonColor.withOpacity(0.3),
+                    color: buttonColor.withAlpha(77),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -89,7 +89,7 @@ class AuthButton extends StatelessWidget {
                       style: TextStyle(
                         color: isButtonEnabled
                             ? buttonTextColor
-                            : buttonTextColor.withOpacity(0.7),
+                            : buttonTextColor.withAlpha(179),
                         fontSize: fontSize,
                         fontWeight: fontWeight,
                         letterSpacing: 0.2,
@@ -196,7 +196,7 @@ class SecondaryAuthButton extends StatelessWidget {
           border: Border.all(
             color: isButtonEnabled
                 ? buttonBorderColor
-                : buttonBorderColor.withOpacity(0.5),
+                : buttonBorderColor.withAlpha(128),
             width: 1.0,
           ),
         ),
@@ -223,7 +223,7 @@ class SecondaryAuthButton extends StatelessWidget {
                       style: TextStyle(
                         color: isButtonEnabled
                             ? buttonTextColor
-                            : buttonTextColor.withOpacity(0.5),
+                            : buttonTextColor.withAlpha(128),
                         fontSize: Sizes.size16,
                         fontWeight: FontWeight.w600,
                       ),

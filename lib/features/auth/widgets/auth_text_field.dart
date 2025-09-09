@@ -120,7 +120,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
               hintStyle: TextStyle(
                 fontSize: Sizes.size16,
                 color: isDarkMode
-                    ? AppColors.darkTertiaryLabel.withOpacity(0.5)
+                    ? AppColors.darkTertiaryLabel.withAlpha(128)
                     : AppColors.lightTertiaryLabel,
                 fontWeight: FontWeight.w400,
               ),

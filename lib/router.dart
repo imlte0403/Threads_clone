@@ -1,4 +1,6 @@
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'constants/app_colors.dart';
 import 'constants/sizes.dart';
 import 'constants/text_style.dart';
@@ -16,29 +18,23 @@ import 'package:thread_clone/widgets/navigation_bar.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-/// 인증 상태에 따라 라우터를 생성하는 함수
-///
-/// [authRepository] AuthRepository 인스턴스
-/// [isLoggedIn] 현재 로그인 상태
-GoRouter createRouter({
-  required AuthRepository authRepository,
-  required bool isLoggedIn,
-}) {
+final _routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/',
 
     // 전역 리다이렉션 로직
     redirect: (BuildContext context, GoRouterState state) {
+      final isLoggedIn = ref.watch(authStateStreamProvider).value ?? false;
       final isGoingToLogin = state.matchedLocation == '/login';
       final isGoingToSignUp = state.matchedLocation == '/signup';
       final isAuthRoute = isGoingToLogin || isGoingToSignUp;
 
       // 로그인되지 않은 상태
       if (!isLoggedIn) {
-        // 인증 화면으로 가고 있지 않다면 로그인 화면으로 리다이렉션
+        // 인증 화면으로 가고 있지 않다면 회원가입 화면으로 리다이렉션 (TA 요구사항)
         if (!isAuthRoute) {
-          return '/login';
+          return '/signup';
         }
         // 이미 인증 화면으로 가고 있다면 그대로 진행
         return null;
@@ -122,7 +118,13 @@ GoRouter createRouter({
       ),
     ],
   );
+});
+
+GoRouter createRouter({required WidgetRef ref}) {
+  return ref.watch(_routerProvider);
 }
+
+
 
 /// 에러 화면
 class ErrorScreen extends StatelessWidget {
