@@ -32,7 +32,7 @@ class MyApp extends ConsumerWidget {
     final settingsViewModel = ref.watch(settingsViewModelProvider);
     
     return MaterialApp.router(
-      routerConfig: createRouter(ref: ref),
+      routerConfig: ref.watch(routerProvider),
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

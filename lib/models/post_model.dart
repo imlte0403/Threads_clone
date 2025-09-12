@@ -14,7 +14,7 @@ class PostModel {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  const PostModel({
+  PostModel({
     this.id,
     required this.username,
     this.avatarUrl,
@@ -191,6 +191,7 @@ class PostModel {
     }
     return null;
   }
+
 }
 
 String formatTimeAgo(DateTime? t) {

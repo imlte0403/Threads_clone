@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constants/firebase_constants.dart';
 import '../utils/firebase_exceptions.dart';
 
@@ -244,6 +245,6 @@ class StorageService {
 
 // Riverpod Provider
 @Riverpod(keepAlive: true)
-StorageService storageService(StorageServiceRef ref) {
+StorageService storageService(Ref ref) {
   return StorageService();
 }

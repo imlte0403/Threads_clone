@@ -6,7 +6,7 @@ part of 'home_view_model.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$postsStreamHash() => r'477f1f7fde3a5975e3ae0dcb2dd15f28a68ba902';
+String _$postsStreamHash() => r'8412a4cd6d46e157613fb3ba1ee038e0e53c2351';
 
 /// 실시간 게시물 스트림을 제공하는 Provider
 ///
@@ -25,7 +25,7 @@ final postsStreamProvider = AutoDisposeStreamProvider<List<PostModel>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef PostsStreamRef = AutoDisposeStreamProviderRef<List<PostModel>>;
-String _$singlePostHash() => r'3b1c1452f353f4589fc40f3c41146201fa572b1a';
+String _$singlePostHash() => r'91b20eae27085a00c43d0103346ee2d4b58b7914';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -177,7 +177,7 @@ class _SinglePostProviderElement
   String get postId => (origin as SinglePostProvider).postId;
 }
 
-String _$totalPostsCountHash() => r'ef33ac7b63d57fa5efcbea653dd890375a6f6a30';
+String _$totalPostsCountHash() => r'40415c33f347597eeb4593e13a58bd4a78ed7fe6';
 
 /// 통계 정보를 제공하는 Provider
 ///
@@ -196,7 +196,7 @@ final totalPostsCountProvider = AutoDisposeFutureProvider<int>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef TotalPostsCountRef = AutoDisposeFutureProviderRef<int>;
-String _$homeViewModelHash() => r'9956ecdc034895e0950c725450f015ce9753b58b';
+String _$homeViewModelHash() => r'4475c8b88c4bb1f4c8fd674a647133fd399654f9';
 
 /// See also [HomeViewModel].
 @ProviderFor(HomeViewModel)

@@ -18,7 +18,7 @@ import 'package:thread_clone/widgets/navigation_bar.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-final _routerProvider = Provider<GoRouter>((ref) {
+final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/',
@@ -114,10 +114,6 @@ final _routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-
-GoRouter createRouter({required WidgetRef ref}) {
-  return ref.watch(_routerProvider);
-}
 
 
 

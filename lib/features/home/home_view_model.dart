@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/post_model.dart';
 import '../../repositories/post_repository.dart';
 import '../../utils/firebase_exceptions.dart';
@@ -313,21 +314,21 @@ class HomeState {
 
 /// 실시간 게시물 스트림을 제공하는 Provider
 @riverpod
-Stream<List<PostModel>> postsStream(PostsStreamRef ref) {
+Stream<List<PostModel>> postsStream(Ref ref) {
   final repository = ref.watch(postRepositoryProvider);
   return repository.getPostsStream(limit: 20);
 }
 
 /// 특정 게시물을 제공하는 Provider
 @riverpod
-Future<PostModel?> singlePost(SinglePostRef ref, String postId) {
+Future<PostModel?> singlePost(Ref ref, String postId) {
   final repository = ref.watch(postRepositoryProvider);
   return repository.getPost(postId);
 }
 
 /// 통계 정보를 제공하는 Provider
 @riverpod
-Future<int> totalPostsCount(TotalPostsCountRef ref) {
+Future<int> totalPostsCount(Ref ref) {
   final repository = ref.watch(postRepositoryProvider);
   return repository.getTotalPostsCount();
 }

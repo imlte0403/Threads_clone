@@ -6,7 +6,7 @@ part of 'post_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$postRepositoryHash() => r'9b1a180945c37295e1cf8fc1d477b7a0dc93e0f5';
+String _$postRepositoryHash() => r'55bcb6ecb92e2b8963301b317920927ebfd98d13';
 
 /// See also [postRepository].
 @ProviderFor(postRepository)
@@ -23,7 +23,7 @@ final postRepositoryProvider = Provider<PostRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef PostRepositoryRef = ProviderRef<PostRepository>;
-String _$postsStreamHash() => r'f0314acf50aefb64600aa97cc0795f377ce46e0b';
+String _$postsStreamHash() => r'7cbd0450b331a902cc146bbb0347181adb8d2832';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -163,7 +163,7 @@ class _PostsStreamProviderElement
   int get limit => (origin as PostsStreamProvider).limit;
 }
 
-String _$postHash() => r'53a69339dfbd4ceab5bdd90c599e9d184200128d';
+String _$postHash() => r'6d6f998915982533ce9675631387516e39ca8968';
 
 /// See also [post].
 @ProviderFor(post)
@@ -279,7 +279,7 @@ class _PostProviderElement extends AutoDisposeFutureProviderElement<PostModel?>
   String get postId => (origin as PostProvider).postId;
 }
 
-String _$userPostsHash() => r'93c269a09a39648d49ca06d858ebdd3766080e03';
+String _$userPostsHash() => r'517c96b6acea9cbc9c514b6aef0f8ed45927f2c4';
 
 /// See also [userPosts].
 @ProviderFor(userPosts)

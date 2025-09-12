@@ -1,26 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'write_view_model.dart';
+part of 'search_viewmodel.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$writeViewModelHash() => r'b008223da15bf1dc9f7dab99f5dde5487d78bd32';
+String _$searchViewModelHash() => r'3caf45e12b645effe7376d9e76fd95e533f662eb';
 
-/// See also [WriteViewModel].
-@ProviderFor(WriteViewModel)
-final writeViewModelProvider =
-    AutoDisposeNotifierProvider<WriteViewModel, WriteState>.internal(
-      WriteViewModel.new,
-      name: r'writeViewModelProvider',
+/// See also [SearchViewModel].
+@ProviderFor(SearchViewModel)
+final searchViewModelProvider =
+    AutoDisposeAsyncNotifierProvider<SearchViewModel, List<PostModel>>.internal(
+      SearchViewModel.new,
+      name: r'searchViewModelProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$writeViewModelHash,
+          : _$searchViewModelHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
-typedef _$WriteViewModel = AutoDisposeNotifier<WriteState>;
+typedef _$SearchViewModel = AutoDisposeAsyncNotifier<List<PostModel>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

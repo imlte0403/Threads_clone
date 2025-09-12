@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 part 'firebase_service.g.dart';
 
@@ -43,11 +44,11 @@ class FirebaseService {
 
 // Riverpod providers for Firebase services
 @Riverpod(keepAlive: true)
-FirebaseFirestore firestore(FirestoreRef ref) {
+FirebaseFirestore firestore(Ref ref) {
   return FirebaseFirestore.instance;
 }
 
 @Riverpod(keepAlive: true)
-FirebaseStorage firebaseStorage(FirebaseStorageRef ref) {
+FirebaseStorage firebaseStorage(Ref ref) {
   return FirebaseStorage.instance;
 }
