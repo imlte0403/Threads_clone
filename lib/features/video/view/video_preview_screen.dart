@@ -26,7 +26,7 @@ class VideoPreviewScreen extends StatefulWidget {
 
 class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
   VideoPlayerController? _videoPlayerController;
-  File? _compressedImageFile;
+  File? _processedImageFile;
   bool _isProcessing = false;
 
   @override
@@ -85,19 +85,19 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
         );
         await tempFile.writeAsBytes(compressedBytes);
 
-        _compressedImageFile = tempFile;
+        _processedImageFile = tempFile;
       }
     } catch (e) {
-      _compressedImageFile = File(widget.media.path);
+      _processedImageFile = File(widget.media.path);
     }
 
     setState(() => _isProcessing = false);
   }
 
-  void _useMedia() {
+  void _confirmSelection() {
     final resultFile = widget.isVideo
         ? File(widget.media.path)
-        : _compressedImageFile ?? File(widget.media.path);
+        : _processedImageFile ?? File(widget.media.path);
 
     if (resultFile.existsSync()) {
       Navigator.pop(context, {'file': resultFile, 'isVideo': widget.isVideo});
@@ -127,7 +127,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
         ),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
-          onPressed: _useMedia,
+          onPressed: _confirmSelection,
           child: const Text(
             "사용하기",
             style: TextStyle(
@@ -168,8 +168,8 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                             : const CupertinoActivityIndicator(
                                 color: Colors.white,
                               )
-                      : _compressedImageFile != null
-                      ? Image.file(_compressedImageFile!, fit: BoxFit.contain)
+                      : _processedImageFile != null
+                      ? Image.file(_processedImageFile!, fit: BoxFit.contain)
                       : const CupertinoActivityIndicator(color: Colors.white),
                 ),
                 if (widget.isVideo &&

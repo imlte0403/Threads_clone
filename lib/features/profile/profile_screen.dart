@@ -46,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         headerSliverBuilder: (context, innerScrolled) => [
           const ProfileAppBar(),
           SliverToBoxAdapter(
-            child: ProfileHeader(profile: ProfileData.janeProfile),
+            child: ProfileHeader(profile: ProfileDataProvider.demoProfile),
           ),
           SliverToBoxAdapter(child: const ProfileActionButtons()),
           SliverPersistentHeader(
@@ -64,9 +64,9 @@ class _ProfileScreenState extends State<ProfileScreen>
             children: [
               ListView.builder(
                 padding: EdgeInsets.zero, 
-                itemCount: ProfileData.threadsData.length,
+                itemCount: ProfileDataProvider.demoThreadsData.length,
                 itemBuilder: (_, i) {
-                  final profilePost = ProfileData.threadsData[i];
+                  final profilePost = ProfileDataProvider.demoThreadsData[i];
                   return PostComponent(
                     post: profilePost.toPostModel(),
                   );
@@ -74,9 +74,9 @@ class _ProfileScreenState extends State<ProfileScreen>
               ),
               ListView.builder(
                 padding: EdgeInsets.zero, 
-                itemCount: ProfileData.repliesData.length,
+                itemCount: ProfileDataProvider.demoRepliesData.length,
                 itemBuilder: (_, i) {
-                  final profilePost = ProfileData.repliesData[i];
+                  final profilePost = ProfileDataProvider.demoRepliesData[i];
                   return PostComponent(
                     post: profilePost.toPostModel(),
                   );

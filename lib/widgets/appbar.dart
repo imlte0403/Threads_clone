@@ -18,7 +18,6 @@ class CustomAppBar extends StatelessWidget {
       elevation: 0,
       centerTitle: true,
       title: Image.asset(logoPath, height: Sizes.size32),
-      actions: const [],
     );
   }
 }

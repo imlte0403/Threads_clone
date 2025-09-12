@@ -67,11 +67,9 @@ class WriteViewModel extends _$WriteViewModel {
     );
   }
 
-  // ==================== Post Creation ====================
-
   /// 게시물 작성
   Future<void> createPost() async {
-    if (!_canPost()) return;
+    if (!state.canPost) return;
 
     state = state.copyWith(isLoading: true, errorMessage: null);
 
@@ -108,7 +106,7 @@ class WriteViewModel extends _$WriteViewModel {
 
   /// 진행률과 함께 게시물 작성
   Future<void> createPostWithProgress() async {
-    if (!_canPost()) return;
+    if (!state.canPost) return;
 
     state = state.copyWith(isLoading: true, errorMessage: null, uploadProgress: 0.0);
 
@@ -159,30 +157,20 @@ class WriteViewModel extends _$WriteViewModel {
     }
   }
 
-  // ==================== Validation ====================
 
-  /// 게시할 수 있는지 확인
-  bool _canPost() {
-    return (state.hasText || state.hasMedia) && !state.isLoading;
-  }
 
-  /// 게시 가능 여부 getter
-  bool get canPost => _canPost();
 
   /// 텍스트 길이 제한 확인
-  bool get isTextTooLong => state.text.length > 500; // 예: 500자 제한
+  bool get isTextTooLong => state.text.length > 500; 
 
   /// 미디어 파일 개수 제한 확인
-  bool get isTooManyMedia => state.mediaFiles.length > 10; // 예: 10개 제한
+  bool get isTooManyMedia => state.mediaFiles.length > 10;
 
-  // ==================== State Management ====================
-
-  /// 상태 초기화
   void _resetState() {
     state = const WriteState();
   }
 
-  /// 전체 초기화 (사용자 명시적 리셋)
+  /// 전체 초기화 
   void reset() {
     _resetState();
   }
@@ -195,9 +183,7 @@ class WriteViewModel extends _$WriteViewModel {
   /// 성공 상태 클리어
   void clearSuccess() {
     state = state.copyWith(isSuccess: false);
-  }
-
-  // ==================== File Validation ====================
+  }// ==================== File Validation ====================
 
   /// 파일 유효성 검사
   String? validateFile(File file) {

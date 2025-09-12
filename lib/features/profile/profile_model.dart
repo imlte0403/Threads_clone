@@ -73,28 +73,49 @@ class ProfilePostModel {
   }
 }
 
-class ProfileData {
-  //프로필 정보
-  static ProfileModel get janeProfile => ProfileModel(
+
+class ProfileDataProvider {
+  // 임시 프로필
+  static ProfileModel get demoProfile => ProfileModel(
     username: 'Jane',
     displayName: 'jane_mobbin',
     userId: 'jane_mobbin',
     bio: 'Plant enthusiast!',
     followers: '2 followers',
-    avatarUrl:
-        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face',
+    avatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face',
     isVerified: false,
   );
 
-  static final List<ProfilePostModel> threadsData = [
+  // 프로필 생성 메서드
+  static ProfileModel createProfile({
+    required String username,
+    required String displayName,
+    required String userId,
+    required String bio,
+    required String followers,
+    required String avatarUrl,
+    bool isVerified = false,
+  }) {
+    return ProfileModel(
+      username: username,
+      displayName: displayName,
+      userId: userId,
+      bio: bio,
+      followers: followers,
+      avatarUrl: avatarUrl,
+      isVerified: isVerified,
+    );
+  }
+
+  // TODO: 실제 API 호출로 대체 필요
+  static List<ProfilePostModel> get demoThreadsData => [
     ProfilePostModel(
       username: 'jane_mobbin',
       timeAgo: '5h',
-      text:
-          'Give @john_mobbin a follow if you want to see more travel content!',
+      text: 'Give @john_mobbin a follow if you want to see more travel content!',
       replies: 12,
       likes: 24,
-      avatarUrl: janeProfile.avatarUrl,
+      avatarUrl: demoProfile.avatarUrl,
       likedByAvatars: [
         'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
         'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=face',
@@ -106,7 +127,7 @@ class ProfileData {
       text: 'Tea. Spillage.',
       replies: 8,
       likes: 45,
-      avatarUrl: janeProfile.avatarUrl,
+      avatarUrl: demoProfile.avatarUrl,
       imageUrls: [
         'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=400&fit=crop',
       ],
@@ -118,14 +139,15 @@ class ProfileData {
     ),
   ];
 
-  static final List<ProfilePostModel> repliesData = [
+  // TODO: 실제 API 호출로 대체 필요
+  static List<ProfilePostModel> get demoRepliesData => [
     ProfilePostModel(
       username: 'jane_mobbin',
       timeAgo: '5h',
       text: 'See you there!',
       replies: 3,
       likes: 12,
-      avatarUrl: janeProfile.avatarUrl,
+      avatarUrl: demoProfile.avatarUrl,
       likedByAvatars: [
         'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=face',
       ],
@@ -136,7 +158,7 @@ class ProfileData {
       text: 'Always a dream to see the Medina in Morocco!',
       replies: 15,
       likes: 67,
-      avatarUrl: janeProfile.avatarUrl,
+      avatarUrl: demoProfile.avatarUrl,
       likedByAvatars: [
         'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=100&h=100&fit=crop&crop=face',
         'https://images.unsplash.com/photo-1463453091185-61582044d556?w=100&h=100&fit=crop&crop=face',

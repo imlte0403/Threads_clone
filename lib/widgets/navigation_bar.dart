@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import '../features/create_post/create_post_screen.dart';
+import '../features/write/write_screen.dart';
 import '../constants/sizes.dart';
 import '../constants/app_colors.dart';
+import '../constants/app_data.dart';
 
 class AppNavBar extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -15,9 +16,9 @@ class AppNavBar extends StatelessWidget {
     // Map branch index to UI index
     final branchIndex = navigationShell.currentIndex;
     if (branchIndex < 2) {
-      return branchIndex; // 0,1 → 0,1 (home, search)
+      return branchIndex; 
     } else {
-      return branchIndex + 1; // 2,3 → 3,4 (activity, profile)
+      return branchIndex + 1;
     }
   }
 
@@ -30,19 +31,18 @@ class AppNavBar extends StatelessWidget {
         backgroundColor: Colors.transparent,
         builder: (context) => SizedBox(
           height: MediaQuery.of(context).size.height * 0.9,
-          child: CreatePostScreen(
-            avatarUrl:
-                'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+          child: WriteScreen(
+            avatarUrl: profileImages.first,
           ),
         ),
       );
     } else {
-      // Map UI index to branch index
+// 네비게이션 바의 다른 아이템을 탭했을 때
       int branchIndex;
       if (index < 2) {
-        branchIndex = index; // 0,1 → 0,1 (home, search)
+        branchIndex = index; 
       } else {
-        branchIndex = index - 1; // 3,4 → 2,3 (activity, profile)
+        branchIndex = index - 1; 
       }
       navigationShell.goBranch(branchIndex);
       onIndexChanged?.call(index);

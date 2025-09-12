@@ -3,19 +3,48 @@
     "platforms": {
       "android": {
         "default": {
-          "appId": "실제 사용 중인 Android 앱 ID"
+          "appId": "1:687283648250:android:1cab2eccac9b42ae623b43",
+          "projectId": "thread-clone-cea4c",
+          "fileOutput": "android/app/google-services.json"
         }
       },
       "ios": {
         "default": {
-          "appId": "실제 사용 중인 iOS 앱 ID"
+          "appId": "1:687283648250:ios:d4c828785484ddab623b43",
+          "projectId": "thread-clone-cea4c",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
         }
       },
       "web": {
         "default": {
           "appId": "실제 사용 중인 Web 앱 ID"
         }
+      },
+      "macos": {
+        "default": {
+          "projectId": "thread-clone-cea4c",
+          "appId": "1:687283648250:ios:d4c828785484ddab623b43",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
       }
     }
-  }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ]
 }

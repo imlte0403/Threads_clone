@@ -2,15 +2,74 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../constants/sizes.dart';
 import '../../constants/gaps.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/text_style.dart';
+import '../../constants/app_data.dart';
 import '../../widgets/media_picker.dart';
 import 'write_view_model.dart';
 
+class _AvatarNetwork extends StatelessWidget {
+  const _AvatarNetwork({required this.size, this.url});
+  final double size;
+  final String? url;
+
+  @override
+  Widget build(BuildContext context) {
+    final u = url?.trim();
+    if (u == null || u.isEmpty) {
+      return SizedBox(
+        width: size,
+        height: size,
+        child: ClipOval(
+          child: Container(
+            color: Theme.of(context).colorScheme.secondary,
+            child: Icon(
+              Icons.person,
+              color: Theme.of(context).colorScheme.onSecondary,
+              size: size * 0.6,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: u,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Container(
+            color: Theme.of(context).colorScheme.surface,
+            child: const Center(
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+          errorWidget: (context, url, error) => Container(
+            color: Theme.of(context).colorScheme.secondary,
+            child: Icon(
+              Icons.person,
+              color: Theme.of(context).colorScheme.onSecondary,
+              size: size * 0.6,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class WriteScreen extends ConsumerStatefulWidget {
-  const WriteScreen({super.key});
+  final String avatarUrl;
+
+  const WriteScreen({
+    super.key, 
+    this.avatarUrl = '',
+  });
 
   @override
   ConsumerState<WriteScreen> createState() => _WriteScreenState();
@@ -143,29 +202,34 @@ class _WriteScreenState extends ConsumerState<WriteScreen> {
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(Sizes.size20)),
       child: Scaffold(
-        backgroundColor: AppColors.systemBackground(context),
         appBar: _buildAppBar(state),
         body: Column(
           children: [
             Expanded(
-              child: SingleChildScrollView(
+              child: Padding(
                 padding: const EdgeInsets.all(Sizes.size16),
-                child: Column(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildUserInfo(),
-                    Gaps.v16,
-                    _buildTextField(state),
-                    if (state.hasMedia) ...[
-                      Gaps.v16,
-                      _buildMediaGallery(state),
-                    ],
-                    if (state.isUploadingMedia) ...[
-                      Gaps.v16,
-                      _buildUploadProgress(state),
-                    ],
-                    Gaps.v16,
-                    _buildMediaButton(state),
+                    _buildAvatar(),
+                    Gaps.h16,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'jane_mobbin',
+                            style: AppTextStyles.username(context),
+                          ),
+                          Gaps.v8,
+                          _buildTextField(state),
+                          if (state.hasMedia) _buildMediaGallery(state),
+                          if (state.isUploadingMedia) _buildUploadProgress(state),
+                          Gaps.v16,
+                          _buildMediaButton(state),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -179,7 +243,6 @@ class _WriteScreenState extends ConsumerState<WriteScreen> {
 
   PreferredSizeWidget _buildAppBar(WriteState state) {
     return AppBar(
-      backgroundColor: AppColors.systemBackground(context),
       elevation: 0,
       leadingWidth: Sizes.size80,
       leading: TextButton(
@@ -188,55 +251,28 @@ class _WriteScreenState extends ConsumerState<WriteScreen> {
           'Cancel',
           style: TextStyle(
             color: state.isBusy
-                ? AppColors.tertiaryLabel(context)
-                : AppColors.label(context),
+                ? Theme.of(context).disabledColor
+                : Theme.of(context).colorScheme.onSurface,
             fontSize: Sizes.size16,
           ),
         ),
       ),
-      title: Text(
-        'New Thread',
-        style: TextStyle(
-          fontSize: Sizes.size16,
-          fontWeight: FontWeight.w600,
-          color: AppColors.label(context),
-        ),
+      title: const Text(
+        'New thread',
+        style: TextStyle(fontSize: Sizes.size16, fontWeight: FontWeight.w600),
       ),
       centerTitle: true,
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(1.0),
-        child: Container(
-          height: 1.0,
-          color: AppColors.separator(context),
-        ),
+      bottom: const PreferredSize(
+        preferredSize: Size.fromHeight(1.0),
+        child: Divider(height: 1.0),
       ),
     );
   }
 
-  Widget _buildUserInfo() {
-    return Row(
-      children: [
-        // Anonymous 아바타
-        Container(
-          width: Sizes.size36,
-          height: Sizes.size36,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColors.secondarySystemBackground(context),
-          ),
-          child: Icon(
-            Icons.person,
-            color: AppColors.label(context),
-            size: Sizes.size20,
-          ),
-        ),
-        Gaps.h12,
-        Text(
-          'anonymous',
-          style: AppTextStyles.username(context),
-        ),
-      ],
-    );
+  Widget _buildAvatar() {
+    final avatarUrl = widget.avatarUrl.isNotEmpty ? widget.avatarUrl : profileImages.first;
+    
+    return _AvatarNetwork(size: Sizes.size36, url: avatarUrl);
   }
 
   Widget _buildTextField(WriteState state) {
@@ -245,20 +281,18 @@ class _WriteScreenState extends ConsumerState<WriteScreen> {
       maxLines: null,
       enabled: !state.isBusy,
       decoration: InputDecoration(
-        hintText: 'What\'s on your mind?',
+        filled: false,
+        hintText: 'Start a thread...',
         hintStyle: TextStyle(
-          color: AppColors.tertiaryLabel(context),
+          color: Theme.of(context).hintColor,
           fontSize: Sizes.size16,
         ),
         border: InputBorder.none,
-        contentPadding: EdgeInsets.zero,
       ),
       style: TextStyle(
         fontSize: Sizes.size16,
         color: AppColors.label(context),
-        height: 1.4,
       ),
-      textInputAction: TextInputAction.newline,
     );
   }
 
@@ -391,50 +425,66 @@ class _WriteScreenState extends ConsumerState<WriteScreen> {
   }
 
   Widget _buildMediaButton(WriteState state) {
-    return InkWell(
-      onTap: state.isBusy ? null : _pickMedia,
-      borderRadius: BorderRadius.circular(Sizes.size8),
-      child: Padding(
-        padding: const EdgeInsets.all(Sizes.size8),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Transform.rotate(
-              angle: 0.75,
-              child: Icon(
-                Icons.attach_file,
-                color: state.isBusy
-                    ? AppColors.tertiaryLabel(context)
-                    : (state.hasMedia
-                        ? AppColors.accent(context)
-                        : AppColors.secondaryLabel(context)),
-                size: Sizes.size20,
+    return Row(
+      children: [
+        InkWell(
+          onTap: (state.isBusy || state.isUploadingMedia) ? null : _pickMedia,
+          child: Transform.rotate(
+            angle: 0.75,
+            child: Icon(
+              Icons.attach_file,
+              color: (state.isBusy || state.isUploadingMedia)
+                  ? Theme.of(context).disabledColor
+                  : (state.hasMedia
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).hintColor),
+              size: Sizes.size20,
+            ),
+          ),
+        ),
+        if (state.hasMedia && !state.isUploadingMedia) ...[
+          Gaps.h12,
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Sizes.size8,
+              vertical: Sizes.size4,
+            ),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(Sizes.size12),
+            ),
+            child: Text(
+              '${state.mediaFiles.length}개 첨부됨',
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: Sizes.size12,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            if (state.hasMedia) ...[
-              Gaps.h8,
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: Sizes.size8,
-                  vertical: Sizes.size4,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.accent(context).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(Sizes.size12),
-                ),
-                child: Text(
-                  '${state.mediaFiles.length}개 첨부됨',
-                  style: TextStyle(
-                    color: AppColors.accent(context),
-                    fontSize: Sizes.size12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+          ),
+        ],
+        if (state.isUploadingMedia) ...[
+          Gaps.h8,
+          SizedBox(
+            width: Sizes.size16,
+            height: Sizes.size16,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                Theme.of(context).primaryColor,
               ),
-            ],
-          ],
-        ),
-      ),
+            ),
+          ),
+          Gaps.h4,
+          Text(
+            '처리중...',
+            style: TextStyle(
+              color: Theme.of(context).hintColor,
+              fontSize: Sizes.size12,
+            ),
+          ),
+        ],
+      ],
     );
   }
 
@@ -474,7 +524,7 @@ class _WriteScreenState extends ConsumerState<WriteScreen> {
         child: CircularProgressIndicator(
           strokeWidth: 2,
           valueColor: AlwaysStoppedAnimation<Color>(
-            AppColors.accent(context),
+            Theme.of(context).primaryColor,
           ),
         ),
       );
@@ -486,8 +536,8 @@ class _WriteScreenState extends ConsumerState<WriteScreen> {
         'Post',
         style: TextStyle(
           color: state.canPost
-              ? AppColors.accent(context)
-              : AppColors.tertiaryLabel(context),
+              ? Theme.of(context).primaryColor
+              : Theme.of(context).disabledColor,
           fontSize: Sizes.size16,
           fontWeight: FontWeight.w700,
         ),

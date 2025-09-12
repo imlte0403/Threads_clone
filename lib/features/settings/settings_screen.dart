@@ -5,6 +5,7 @@ import 'package:thread_clone/constants/gaps.dart';
 import '../../constants/sizes.dart';
 import '../../constants/text_style.dart';
 import '../../constants/app_colors.dart';
+import 'settings_viewmodel.dart';
 
 
 class SettingsScreen extends ConsumerWidget {
@@ -55,9 +56,6 @@ class SettingsScreen extends ConsumerWidget {
       ),
       body: ListView(
         children: [
-          // This part will cause an error if settingsViewModelProvider is not available.
-          // I will comment it out for now to fix other issues first.
-          /*
           SwitchListTile(
             secondary: Icon(
               Icons.dark_mode,
@@ -72,7 +70,6 @@ class SettingsScreen extends ConsumerWidget {
               ref.read(settingsViewModelProvider).setDarkMode(value);
             },
           ),
-          */
           ListTile(
             leading: Icon(
               Icons.person_add_alt,

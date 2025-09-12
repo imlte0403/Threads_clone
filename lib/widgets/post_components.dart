@@ -28,8 +28,7 @@ class PostComponent extends ConsumerStatefulWidget {
   ConsumerState<PostComponent> createState() => _PostComponentState();
 }
 
-// Legacy constructor support
-class LegacyPostComponent extends StatefulWidget {
+class LegacyPostComponent extends StatelessWidget {
   const LegacyPostComponent({
     super.key,
     required this.username,
@@ -54,7 +53,36 @@ class LegacyPostComponent extends StatefulWidget {
   final String? avatarUrl;
 
   @override
-  State<LegacyPostComponent> createState() => _LegacyPostComponentState();
+  Widget build(BuildContext context) {
+    final post = PostModel(
+      username: username,
+      text: text,
+      avatarUrl: avatarUrl,
+      isVerified: isVerified,
+      imageUrls: imageUrls,
+      replies: replies,
+      likes: likes,
+      likedByAvatars: likedByAvatars,
+      createdAt: _parseTimeAgo(timeAgo),
+    );
+
+    return PostComponent(post: post);
+  }
+
+  DateTime? _parseTimeAgo(String timeAgo) {
+    final now = DateTime.now();
+    if (timeAgo.endsWith('h')) {
+      final hours = int.tryParse(timeAgo.replaceAll('h', '')) ?? 0;
+      return now.subtract(Duration(hours: hours));
+    } else if (timeAgo.endsWith('m')) {
+      final minutes = int.tryParse(timeAgo.replaceAll('m', '')) ?? 0;
+      return now.subtract(Duration(minutes: minutes));
+    } else if (timeAgo.endsWith('d')) {
+      final days = int.tryParse(timeAgo.replaceAll('d', '')) ?? 0;
+      return now.subtract(Duration(days: days));
+    }
+    return now;
+  }
 }
 
 class _PostComponentState extends ConsumerState<PostComponent> {
@@ -225,149 +253,6 @@ class _PostComponentState extends ConsumerState<PostComponent> {
   }
 }
 
-// Legacy State class
-class _LegacyPostComponentState extends State<LegacyPostComponent> {
-  bool isLiked = false;
-  bool isCommented = false;
-  bool isReposted = false;
-  bool isShared = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: Sizes.size8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: Sizes.size16,
-          vertical: Sizes.size12,
-        ),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 좌측 섹션
-              Column(
-                children: [
-                  // 프로필 이미지
-                  _AvatarNetwork(size: Sizes.size36, url: widget.avatarUrl),
-                  Gaps.v8,
-                  // 세로선
-                  Expanded(
-                    child: Container(
-                      width: Sizes.size2,
-                      color: AppColors.separator(context),
-                    ),
-                  ),
-                  Gaps.v8,
-                  // 아바타 이미지
-                  _MiniAvatarStack(urls: widget.likedByAvatars),
-                ],
-              ),
-              Gaps.h12,
-              Expanded(
-                // 우측 섹션
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Gaps.v4,
-                    // 유저 네임 / 인증 마크 / 시간 / ... 버튼
-                    Row(
-                      children: [
-                        //유저 네임
-                        Text(
-                          widget.username,
-                          style: AppTextStyles.username(context),
-                        ),
-                        // 인증 마크
-                        if (widget.isVerified) ...[
-                          Gaps.h4,
-                          Icon(
-                            Icons.verified,
-                            size: Sizes.size16,
-                            color: AppColors.accent(context),
-                          ),
-                        ],
-                        const Spacer(),
-                        // 시간
-                        Text(
-                          widget.timeAgo,
-                          style: AppTextStyles.system(context),
-                        ),
-                        Gaps.h12,
-                        // ... 버튼
-                        GestureDetector(
-                          onTap: () {
-                            showModalBottomSheet(
-                              backgroundColor: AppColors.systemBackground(
-                                context,
-                              ),
-                              context: context,
-                              builder: (context) => PostModalBottomSheet(),
-                            );
-                          },
-                          child: Icon(
-                            Icons.more_horiz,
-                            size: Sizes.size18,
-                            color: AppColors.tertiaryLabel(context),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Gaps.v4,
-                    Text(widget.text, style: AppTextStyles.commonText(context)),
-                    if (widget.imageUrls.isNotEmpty) ...[
-                      Gaps.v12,
-                      _MediaGallery(urls: widget.imageUrls),
-                    ],
-                    Gaps.v16,
-                    Row(
-                      children: [
-                        _ActionIcon(
-                          icon: isLiked
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          onTap: () => setState(() => isLiked = !isLiked),
-                          isSelected: isLiked,
-                          selectedColor: Colors.red,
-                        ),
-                        Gaps.h5,
-                        _ActionIcon(
-                          icon: Icons.mode_comment_outlined,
-                          onTap: () =>
-                              setState(() => isCommented = !isCommented),
-                          isSelected: isCommented,
-                          selectedColor: Colors.orange,
-                        ),
-                        Gaps.h5,
-                        _ActionIcon(
-                          icon: Icons.repeat,
-                          onTap: () => setState(() => isReposted = !isReposted),
-                          isSelected: isReposted,
-                          selectedColor: Colors.green,
-                        ),
-                        Gaps.h5,
-                        _ActionIcon(
-                          icon: Icons.send_outlined,
-                          onTap: () => setState(() => isShared = !isShared),
-                          isSelected: isShared,
-                        ),
-                      ],
-                    ),
-                    Gaps.v12,
-                    Text(
-                      '${widget.replies} replies · ${widget.likes} likes',
-                      style: AppTextStyles.system(context),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class _AvatarNetwork extends StatelessWidget {
   const _AvatarNetwork({
@@ -383,7 +268,7 @@ class _AvatarNetwork extends StatelessWidget {
   Widget build(BuildContext context) {
     final u = url?.trim();
     
-    // 익명 사용자이거나 URL이 없는 경우 익명 아바타 표시
+    // 익명 아바타 표시
     if (isAnonymous || u == null || u.isEmpty) {
       return SizedBox(
         width: size,

@@ -22,7 +22,6 @@ class ReportScreen extends StatefulWidget {
 }
 
 class _ReportScreenState extends State<ReportScreen> {
-  String? selectedReason;
 
   final List<ReportOption> reportOptions = [
     ReportOption(
@@ -147,9 +146,7 @@ class _ReportScreenState extends State<ReportScreen> {
             ? const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey)
             : null,
         onTap: () {
-          setState(() {
-            selectedReason = option.id;
-          });
+          // TODO: 신고 기능 구현?
         },
       ),
     );

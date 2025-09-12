@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:thread_clone/router.dart';
 import 'firebase_options.dart';
 import 'constants/app_theme.dart';
+import 'features/settings/settings_viewmodel.dart';
 
 
 void main() async {
@@ -28,12 +29,14 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final settingsViewModel = ref.watch(settingsViewModelProvider);
+    
     return MaterialApp.router(
       routerConfig: createRouter(ref: ref),
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: settingsViewModel.darkMode ? ThemeMode.dark : ThemeMode.light,
     );
   }
 }

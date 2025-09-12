@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'settings_model.dart';
 import 'settings_repository.dart';
 
 class SettingsViewModel extends ChangeNotifier {
   final SettingsRepository _repository = SettingsRepository();
   SettingsModel _settings = SettingsModel(darkMode: false);
-  final bool _isInitialized = true; // 초기값을 true로 설정
 
   SettingsModel get settings => _settings;
   bool get darkMode => _settings.darkMode;
-  bool get isInitialized => _isInitialized;
 
   SettingsViewModel() {
     _loadSettings();
@@ -33,3 +32,8 @@ class SettingsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+// Riverpod Provider
+final settingsViewModelProvider = ChangeNotifierProvider<SettingsViewModel>((ref) {
+  return SettingsViewModel();
+});
